@@ -12,28 +12,22 @@ class UserUsecase {
     private generateOtp: GenerateOtp,
     private sendOtp: SendOtp,
     private jwtCreate: JwtCreate
-
   ) {}
 
   // *Saving user to db
   async saveUser(user: IUser) {
     try {
       console.log("inside save user");
+
       const hashedPassword = await this.Encrypt.createHash(user.password);
       user.password = hashedPassword;
+
       const userData = await this.userInterface.save(user);
-      if (userData) {
-        return {
-          status: 200,
-          data: userData,
-        };
-      } else {
-        return {
-          status: 500,
-          // data: userData,
-          message: "Internal error",
-        };
-      }
+
+      return {
+        status: 200,
+        data: userData || { message: "Internal error" },
+      };
     } catch (error) {
       return {
         status: 400,
@@ -42,46 +36,48 @@ class UserUsecase {
     }
   }
 
-  async userLogin(user: any) {
+  async userLogin(user: IUser) {
     try {
       console.log(`inside usecase`);
+
       const userFound = await this.userInterface.findByEmail(user.email);
-      if (userFound) {
-        console.log(`userfound`);
-        const passwordMatch = await this.Encrypt.compare(
-          user.password,
-          userFound.password
-        );
-        if (passwordMatch) {
-          console.log(`password match`);
-          const token = this.jwtCreate.createJwt(userFound._id, "user");
-          return {
-            status: 200,
-            data: {
-              success: true,
-              message: "Authentication Successfull",
-              userId: userFound,
-              token: token,
-            },
-          };
-        } else {
-          return {
-            status: 200,
-            data: {
-              success: false,
-              message: "Authentication Failed",
-            },
-          };
-        }
-      } else {
+      
+      if (!userFound) {
         return {
-          status: 200,
+          status: 401,
           data: {
             success: false,
             message: "User Not Found",
           },
         };
       }
+
+      const passwordMatch = await this.Encrypt.compare(
+        user.password,
+        userFound.password
+      );
+
+      if (!passwordMatch) {
+        return {
+          status: 401,
+          data: {
+            success: false,
+            message: "Authentication Failed",
+          },
+        };
+      }
+
+      const token = this.jwtCreate.createJwt(userFound._id, "user");
+
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: "Authentication Successful",
+          userData: userFound,
+        token: token
+        },
+      };
     } catch (error) {
       return {
         status: 400,
@@ -113,7 +109,7 @@ class UserUsecase {
       const verify = await this.sendOtp.sendVerificationMail(email, otp);
       return {
         status: 200,
-        otp: otp,
+        otp,
         data: verify,
       };
     } catch (error) {

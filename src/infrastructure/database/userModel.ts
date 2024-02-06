@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, ObjectId, TypeExpressionOperatorReturningObjectId } from "mongoose";
+import mongoose, { Schema, Document, ObjectId,  } from "mongoose";
 
 export interface IUsers extends Document {
   _id: ObjectId;
@@ -16,7 +16,7 @@ const UserSchema: Schema = new Schema({
   },
   mobile: {
     type: String,
-    required: true,
+    
   },
   email: {
     type: String,
