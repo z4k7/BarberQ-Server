@@ -1,4 +1,4 @@
-interface IUser {
+interface IVendor {
     _id?: string,
     name: string,
     email: string,
@@ -6,4 +6,4 @@ interface IUser {
     isBlocked:boolean,
 }
 
-export default IUser
+export default IVendor

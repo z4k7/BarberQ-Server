@@ -8,12 +8,13 @@ const startServer = async () => {
     await connectDb();
 
     const app = httpServer;
-    const PORT = process.env.PORT || 7000;
+    const PORT = process.env.PORT || 3000;
+    
     app?.listen(PORT, () => console.log(`Connected to Server. running at ${PORT}`));
   } catch (error) {
     console.log(error);
   }
 };
 
-startServer();  
+startServer();   
  
