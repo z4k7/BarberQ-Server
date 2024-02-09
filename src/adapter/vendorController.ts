@@ -6,7 +6,7 @@ class VendorController{
 
     constructor(private vendorUsecase: VendorUsecase){}
 
-    async signUp(req:Request, res: Response) {
+    async vendorSignUp(req:Request, res: Response) {
         try {
             const newVendor = req.body;
             const vendorExistence = await this.vendorUsecase.isEmailExist(newVendor.email);
@@ -33,7 +33,7 @@ class VendorController{
     }
 
 
-    async login(req: Request, res: Response) {
+    async vendorLogin(req: Request, res: Response) {
         try {
             const vendor = req.body;
             const vendorData = await this.vendorUsecase.vendorLogin(vendor);
@@ -52,7 +52,7 @@ class VendorController{
     }
 
 
-    async otpVerification(req: Request, res: Response) {
+    async vendorOtpVerification(req: Request, res: Response) {
         try {
             const vendorToSave: IVendor = req.app.locals.vendor as IVendor;
             const generatedOtp = req.app.locals.otp;

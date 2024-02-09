@@ -19,9 +19,9 @@ const useCase = new VendorUsecase(repository, encrypt, genOtp, sendOtp, jwtCreat
 
 const controller = new VendorController(useCase);
 
-route.post('/register', (req, res) => controller.signUp(req, res));
-route.post('/verifyOtp', (req, res) => controller.otpVerification(req, res));
-route.post('/login', (req, res) => controller.login(req, res));
+route.post('/register', (req, res) => controller.vendorSignUp(req, res));
+route.post('/verifyOtp', (req, res) => controller.vendorOtpVerification(req, res));
+route.post('/login', (req, res) => controller.vendorLogin(req, res));
 
 
 export default route
