@@ -5,10 +5,12 @@ import IUser from "../domain/user";
 class UserController {
   constructor(private userUsecase: UserUsecase) {}
 
-  async signUp(req: Request, res: Response) {
+  async userSignUp(req: Request, res: Response) {
     try {
+          
       const newUser = req.body;
       const userExistence = await this.userUsecase.isEmailExist(newUser.email);
+  console.log(userExistence, 'userExistence');
   
       if (userExistence.data) {
         return res.status(401).json({ data: false, message: "Email already in use" });
@@ -31,7 +33,7 @@ class UserController {
   }
   
 
-  async login(req: Request, res: Response) {
+  async userLogin(req: Request, res: Response) {
     try {
       console.log("Login controller");
       const user = req.body;
@@ -50,7 +52,7 @@ console.log(`userData:`,userData);
     }
   }
 
-  async otpVerification(req: Request, res: Response) {
+  async userOtpVerification(req: Request, res: Response) {
     try {
       const userToSave: IUser = req.app.locals.user as IUser;
       const generatedOtp = req.app.locals.otp;

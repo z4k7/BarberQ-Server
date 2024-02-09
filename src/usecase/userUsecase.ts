@@ -12,8 +12,8 @@ class UserUsecase {
     private generateOtp: GenerateOtp,
     private sendOtp: SendOtp,
     private jwtCreate: JwtCreate
-  ) {}
-
+  ) { }
+  
   // *Saving user to db
   async saveUser(user: IUser) {
     try {
