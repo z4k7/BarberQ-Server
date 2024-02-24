@@ -1,24 +1,35 @@
-import AdminRepository from "../repository/adminRepository";
-import UserRepository from "../repository/userRepository";
-import Encrypt from "../utils/hashPassword";
-import JwtCreate from "../utils/jwtCreate";
-import AdminUsecase from "../../usecase/adminUsecase";
-import AdminController from "../../adapter/adminController";
+import { adminAuth } from "../middlewares/adminAuth";
+import { adminController,serviceController } from "../utils/controllers";
+
+
 
 import express from "express";
 const route = express.Router();
 
-const adminRepository = new AdminRepository();
-const userRepository = new UserRepository()
-const encrypt = new Encrypt();
-const jwtCreate = new JwtCreate();
+route.post("/login",  (req, res) => adminController.adminLogin(req, res));
 
-const useCase = new AdminUsecase(adminRepository,userRepository, encrypt, jwtCreate);
+//* Admin-User Routes
+route.get("/users",adminAuth, (req, res) => adminController.getUsers(req, res));
+route.patch("/users/block/:id",adminAuth, (req, res) =>
+  adminController.blockUnblockUser(req, res)
+);
 
-const controller = new AdminController(useCase);
+//* Admin-Vendor Routes
+route.get("/vendors",adminAuth, (req, res) => adminController.getVendors(req, res));
+route.patch("/vendors/block/:id",adminAuth, (req, res) =>
+  adminController.blockUnblockVendor(req, res)
+);
 
-route.post("/login", (req, res) => controller.adminLogin(req, res));
-route.get("/users", (req, res) => controller.getUsers(req, res))
-route.patch("/users/block/:id", (req, res) => controller.blockUnblockUser(req, res));
+// *Admin-Service Routes
+route.get("/services",adminAuth, (req, res) => serviceController.getServices(req, res));
+route.post("/services/addService",adminAuth, (req, res) =>
+  serviceController.addService(req, res)
+);
+route.put("/services/editService",adminAuth, (req, res) =>
+  serviceController.editService(req, res)
+);
+route.patch("/services/hide/:id",adminAuth, (req, res) =>
+  serviceController.hideService(req, res)
+);
 
 export default route;

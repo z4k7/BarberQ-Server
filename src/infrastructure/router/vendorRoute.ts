@@ -1,27 +1,20 @@
-import VendorRepository from "../repository/vendorRepository";
-import Encrypt from "../utils/hashPassword";
-import GenerateOtp from "../utils/generateOtp";
-import SendOtp from "../utils/sendMail";
-import JwtCreate from "../utils/jwtCreate";
-import VendorUsecase from "../../usecase/vendorUsecase";
-import VendorController from "../../adapter/vendorController";
+import { vendorController, salonController } from "../utils/controllers";
+import { vendorAuth } from "../middlewares/vendorAuth";
+import { multerMiddleware } from "../middlewares/multerMiddleware";
 
-import express from 'express';
+
+import express from "express";
 const route = express.Router();
 
-const repository = new VendorRepository();
-const encrypt = new Encrypt();
-const genOtp = new GenerateOtp();
-const sendOtp = new SendOtp();
-const jwtCreate = new JwtCreate();
 
-const useCase = new VendorUsecase(repository, encrypt, genOtp, sendOtp, jwtCreate);
-
-const controller = new VendorController(useCase);
-
-route.post('/register', (req, res) => controller.vendorSignUp(req, res));
-route.post('/verifyOtp', (req, res) => controller.vendorOtpVerification(req, res));
-route.post('/login', (req, res) => controller.vendorLogin(req, res));
+route.post("/register", (req, res) => vendorController.vendorSignUp(req, res));
+route.post("/verifyOtp", (req, res) =>
+  vendorController.vendorOtpVerification(req, res)
+);
+route.post("/login", (req, res) => vendorController.vendorLogin(req, res));
 
 
-export default route
+route.post("/add-salon",vendorAuth,multerMiddleware.array('banner'),(req,res)=>salonController.addSalon(req,res))
+
+
+export default route;

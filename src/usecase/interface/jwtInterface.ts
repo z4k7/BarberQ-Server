@@ -1,5 +1,8 @@
+import { ID } from "../../infrastructure/database/common"
+
 interface Ijwt{
-    createJwt(userId:string,role:string):string
+    generateAccessToken(id: ID): string
+    generateRefreshToken(id: ID): string
 }
 
 export default Ijwt

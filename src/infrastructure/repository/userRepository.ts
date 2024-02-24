@@ -4,7 +4,7 @@ import UserInterface from "../../usecase/interface/userInterface";
 
 class UserRepository implements UserInterface {
   // *Saving the user in database
-  async save(user: IUser): Promise<any> {
+  async saveUser(user: IUser): Promise<any> {
     const User = new UserModel(user);
     const savedUser = await User.save()
       .then((res) => {
