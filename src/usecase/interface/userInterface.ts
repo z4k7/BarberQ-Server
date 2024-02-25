@@ -1,7 +1,7 @@
 import IUser from "../../domain/user";
 
 interface UserInterface {
-  save(user: IUser): Promise<any>;
+  saveUser(user: IUser): Promise<any>;
   findByEmail(email: string): Promise<any>;
   findUserById(user: string): Promise<any>;
   findAllUsers(): Promise<any>;

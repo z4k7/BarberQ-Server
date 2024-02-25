@@ -1,9 +1,9 @@
 import IUser from "../domain/user";
 import Encrypt from "../infrastructure/utils/hashPassword";
 import GenerateOtp from "../infrastructure/utils/generateOtp";
-import SendOtp from "../infrastructure/utils/sendMail";
-import JwtCreate from "../infrastructure/utils/jwtCreate";
+import SendOtp from "../infrastructure/utils/nodemailer";
 import UserInterface from "./interface/userInterface";
+import Ijwt from "./interface/jwtInterface";
 
 class UserUsecase {
   constructor(
@@ -11,9 +11,9 @@ class UserUsecase {
     private Encrypt: Encrypt,
     private generateOtp: GenerateOtp,
     private sendOtp: SendOtp,
-    private jwtCreate: JwtCreate
-  ) { }
-  
+    private jwt: Ijwt
+  ) {}
+
   // *Saving user to db
   async saveUser(user: IUser) {
     try {
@@ -22,7 +22,7 @@ class UserUsecase {
       const hashedPassword = await this.Encrypt.createHash(user.password);
       user.password = hashedPassword;
 
-      const userData = await this.userInterface.save(user);
+      const userData = await this.userInterface.saveUser(user);
 
       return {
         status: 200,
@@ -41,14 +41,19 @@ class UserUsecase {
       console.log(`inside usecase`);
 
       const userFound = await this.userInterface.findByEmail(user.email);
-      
+
       if (!userFound) {
         return {
           status: 401,
           data: {
-            success: false,
             message: "User Not Found",
           },
+        };
+      }
+      if (userFound.isBlocked) { 
+        return {
+          status: 401,
+          data: { message: "Sorry! You are blocked by admin." },
         };
       }
 
@@ -57,25 +62,23 @@ class UserUsecase {
         userFound.password
       );
 
-      if (!passwordMatch) {
+      if (!passwordMatch) { 
         return {
           status: 401,
           data: {
-            success: false,
             message: "Authentication Failed",
           },
         };
       }
 
-      const token = this.jwtCreate.createJwt(userFound._id, "user");
-
+      const accessToken = this.jwt.generateAccessToken(userFound._id);
+      const refreshToken = this.jwt.generateRefreshToken(userFound._id);
       return {
         status: 200,
         data: {
-          success: true,
-          message: "Authentication Successful",
           userData: userFound,
-        token: token
+          accessToken,
+          refreshToken,
         },
       };
     } catch (error) {
@@ -106,7 +109,7 @@ class UserUsecase {
     try {
       const otp = await this.generateOtp.genOtp(6);
       console.log(otp);
-      const verify = await this.sendOtp.sendVerificationMail(email, otp);
+      const verify = this.sendOtp.sendVerificationMail(email, otp);
       return {
         status: 200,
         otp,

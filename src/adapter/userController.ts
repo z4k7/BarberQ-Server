@@ -7,47 +7,47 @@ class UserController {
 
   async userSignUp(req: Request, res: Response) {
     try {
-          
       const newUser = req.body;
       const userExistence = await this.userUsecase.isEmailExist(newUser.email);
-  console.log(userExistence, 'userExistence');
-  
+      console.log(userExistence, "userExistence");
+
       if (userExistence.data) {
-        return res.status(401).json({ data: false, message: "Email already in use" });
+        return res
+          .status(401)
+          .json({ data:{ message: "Email already in use"} });
       }
-  
-      const verificationResponse = await this.userUsecase.verifyMail(newUser.email);
-  
+
+      const verificationResponse = await this.userUsecase.verifyMail(
+        newUser.email
+      );
+
       req.app.locals.user = newUser;
       req.app.locals.otp = verificationResponse.otp;
-  
+
       return res.status(201).json({ response: verificationResponse });
     } catch (error) {
       console.error("Error in signUp:", error);
       return res.status(500).json({
-        data: false,
-        message: "Internal Server Error",
-        error: (error as Error).message,
+        
+       data:{ message: "Internal Server Error",
+        error: (error as Error).message,}
       });
     }
   }
-  
 
   async userLogin(req: Request, res: Response) {
     try {
       console.log("Login controller");
       const user = req.body;
       const userData = await this.userUsecase.userLogin(user);
-console.log(`userData:`,userData);
+      console.log(`userData:`, userData);
       return res.status(userData.status).json(userData);
-      
     } catch (error) {
       console.error("Error in login:", error);
       return res.status(500).json({
-        status: 500,
-        success: false,
+       data: {status: 500,
         message: "Internal Server Error",
-        error: (error as Error).message,
+        error: (error as Error).message,}
       });
     }
   }
@@ -57,12 +57,12 @@ console.log(`userData:`,userData);
       const userToSave: IUser = req.app.locals.user as IUser;
       const generatedOtp = req.app.locals.otp;
       const enteredOtp = req.body.otp;
-  
+
       if (enteredOtp === generatedOtp) {
         const savedUser = await this.userUsecase.saveUser(userToSave);
         return res.status(201).json({ userSave: savedUser });
       } else {
-        return res.status(401).json({ success: false, message: "Invalid OTP" });
+        return res.status(401).json({ data:{ message: "Invalid OTP"} });
       }
     } catch (error) {
       console.error("Error in otpVerification:", error);
@@ -73,7 +73,6 @@ console.log(`userData:`,userData);
       });
     }
   }
-  
 }
 
 export default UserController;
