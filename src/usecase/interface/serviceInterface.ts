@@ -7,5 +7,6 @@ interface ServiceInterface {
   findAllServices(): Promise<any>;
   hideService(serviceId: string): Promise<any>;
   findByIdAndUpdate(service: IService): Promise<any>;
+  findAllServicesWithCount(page:number,limit:number,searchQuery:string):Promise<any>
 }
 export default ServiceInterface;

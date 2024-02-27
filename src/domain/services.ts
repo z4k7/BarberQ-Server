@@ -1,7 +1,7 @@
 interface IService{
     _id?: string,
     serviceName:string,
-    duration:string,
+    duration:number,
     category: string,
     isVisible:boolean,
 }

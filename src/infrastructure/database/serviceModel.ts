@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, ObjectId } from "mongoose";
 export interface IServices extends Document {
   _id: ObjectId;
   serviceName: string | null;
-  duration: string | null;
+  duration: number | null;
   category: string | null;
   isVisible: boolean | null;
 }
@@ -16,7 +16,9 @@ const ServiceSchema: Schema = new Schema(
       unique: true,
     },
     duration: {
-      type: String,
+      type: Number,
+      min: 0,
+      max: 99,
       required: true,
     },
     category: {

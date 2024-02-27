@@ -32,6 +32,47 @@ class VendorRepository implements VendorInterface {
     return vendorsList;
   }
 
+   async findAllVendorsWithCount(page: number, limit: number, searchQuery: string): Promise<any> {
+     try {
+       const regex = new RegExp(searchQuery, 'i')
+       
+       const pipeline = [
+         {
+           $match: {
+             $or: [
+             {name:{$regex:regex}},
+             {email:{$regex:regex}},
+             {mobile:{$regex:regex}},
+           ]
+           }
+         },
+         {
+           $facet: {
+             totalCount: [{ $count: 'count' }],
+             paginatedResults: [
+               { $skip: (page - 1) * limit },
+               { $limit: limit },
+               { $project: { password: 0 } },
+               
+             ]
+           }
+         }
+       ]
+       const [result] = await VendorModel.aggregate(pipeline).exec()
+
+       const vendors = result.paginatedResults
+       const vendorCount = (result.totalCount.length > 0) ? result.totalCount[0].count : 0
+       return {
+         vendors,
+         vendorCount
+       }
+        
+      } catch (error) {
+        console.log(error);
+      throw Error('Error while getting vendor data')
+      }
+  }
+
   async blockUnblockVendor(vendorId: string): Promise<any> {
     const vendorFound = await VendorModel.findById(vendorId);
     console.log(`id`,vendorId);

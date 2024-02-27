@@ -18,7 +18,7 @@ export interface ISalon extends Document{
     facilities: Array<string>;
 }
 
-const salonSchema: Schema = new Schema({
+const SalonSchema: Schema = new Schema({
     vendorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref:'Vendor'
@@ -72,5 +72,5 @@ const salonSchema: Schema = new Schema({
 }
 )
 
-const salonModel = mongoose.model<ISalon>('Salon', salonSchema)
-export default salonModel
+const SalonModel = mongoose.model<ISalon>('Salon', SalonSchema)
+export default SalonModel

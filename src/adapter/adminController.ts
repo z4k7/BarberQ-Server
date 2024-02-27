@@ -8,6 +8,7 @@ class AdminController {
     try {
       const admin = req.body;
       const adminData = await this.adminUsecase.adminLogin(admin);
+
       return res.status(adminData.status).json(adminData);
     } catch (error) {
       console.log(`Error in login:`, error);
@@ -22,7 +23,12 @@ class AdminController {
 
   async getUsers(req: Request, res: Response) {
     try {
-      const usersList = await this.adminUsecase.getUsers();
+
+      const page = parseInt(req.query.page as string)
+      const limit = parseInt(req.query.limit as string)
+      const searchQuery = req.query.searchQuery as string | undefined
+
+      const usersList = await this.adminUsecase.getUsers(page,limit,searchQuery);
 
       return res.status(usersList.status).json(usersList);
     } catch (error) {
@@ -37,7 +43,10 @@ class AdminController {
 
   async getVendors(req: Request, res: Response) {
     try {
-      const vendorsList = await this.adminUsecase.getVendors();
+      const page = parseInt(req.query.page as string)
+      const limit = parseInt(req.query.limit as string)
+      const searchQuery = req.query.searchQuery as string | undefined
+      const vendorsList = await this.adminUsecase.getVendors(page,limit,searchQuery);
       return res.status(vendorsList.status).json(vendorsList);
     } catch (error) {
       return res.status(500).json({

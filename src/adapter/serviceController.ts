@@ -50,7 +50,12 @@ class ServiceController {
 
   async getServices(req: Request, res: Response) {
     try {
-      const serviceList = await this.serviceUsecase.getServices();
+      
+      const page = parseInt(req.query.page as string)
+      const limit = parseInt(req.query.limit as string)
+      const searchQuery = req.query.searchQuery as string | undefined
+
+      const serviceList = await this.serviceUsecase.getServices(page,limit,searchQuery);
       return res.status(serviceList.status).json(serviceList);
     } catch (error) {
       return res.status(500).json({

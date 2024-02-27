@@ -34,15 +34,62 @@ class UserRepository implements UserInterface {
     return allUsers;
   }
 
+  async findAllUsersWithCount(
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<any> {
+    try {
+      const regex = new RegExp(searchQuery, "i");
+
+      const pipeline = [
+        {
+          $match: {
+            $or: [
+              { name: { $regex: regex } },
+              { email: { $regex: regex } },
+              { mobile: { $regex: regex } },
+            ],
+          },
+        },
+        {
+          $facet: {
+            totalCount: [{ $count: "count" }],
+            paginatedResults: [
+              { $skip: (page - 1) * limit },
+              { $limit: limit },
+              { $project: { password: 0 } },
+            ],
+          },
+        },
+      ];
+      const [result] = await UserModel.aggregate(pipeline).exec();
+
+      console.log(`result after aggregation`, result);
+
+      const users = result.paginatedResults;
+      const userCount =
+        result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+
+      return {
+        users,
+        userCount,
+      };
+    } catch (error) {
+      console.log(error);
+      throw Error("Error while getting user data");
+    }
+  }
+
   async blockUnblockUser(userId: string): Promise<any> {
     const userFound = await UserModel.findById(userId);
     console.log(`inside repository`, userFound);
-if(userFound){
-  userFound.isBlocked = !userFound.isBlocked;
-  return userFound.save()
-}else{
-  throw Error("User not found")
-}
+    if (userFound) {
+      userFound.isBlocked = !userFound.isBlocked;
+      return userFound.save();
+    } else {
+      throw Error("User not found");
+    }
   }
 }
 
