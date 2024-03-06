@@ -1,6 +1,5 @@
 import { userAuth } from "../middlewares/userAuth";
-import { userController } from "../utils/controllers";
-
+import { salonController, userController } from "../utils/controllers";
 
 
 import express from "express";
@@ -11,6 +10,13 @@ route.post("/register", (req, res) => userController.userSignUp(req, res));
 route.post("/verifyOtp", (req, res) =>
   userController.userOtpVerification(req, res)
 );
+
+route.get("/resend-otp", (req, res) => userController.resendOtp(req, res));
+
+
 route.post("/login", (req, res) => userController.userLogin(req, res));
 
-export default route;
+route.get("/salon",(req,res)=>salonController.getSalons(req,res) )
+
+
+export default route; 

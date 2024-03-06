@@ -35,6 +35,33 @@ class UserController {
     }
   }
 
+
+  async resendOtp(req: Request, res: Response) {
+    try {
+      const user = req.app.locals.user;
+      const emailResponse = await this.userUsecase.verifyMail(user.email);
+
+      req.app.locals.otp = emailResponse.otp;
+
+      setTimeout(() => {
+        req.app.locals.otp = undefined;
+        console.log(`Otp Expired in resend otp`);
+      }, 1000 * 30);
+
+      return res.status(200).json({ response: emailResponse });
+    } catch (error) {
+      console.log(`Error in resendOtp:`, error);
+      return res.status(500).json({
+        data: {
+          message: "Internal Server Error",
+          error: (error as Error).message,
+        },
+      });
+    }
+  }
+
+
+
   async userLogin(req: Request, res: Response) {
     try {
       console.log("Login controller");

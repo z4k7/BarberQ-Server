@@ -30,6 +30,7 @@ class ServiceUsecase {
       );
       return {
         status: 200,
+        message:"Service Edited Successfully",
         data: serviceData || { message: "Internal Error" },
       };
     } catch (error) {
@@ -59,9 +60,12 @@ class ServiceUsecase {
     }
   }
 
-  async getServices() {
+  async getServices(page:number,limit:number,searchQuery:string|undefined) {
     try {
-      const serviceList = await this.serviceInterface.findAllServices();
+      if (isNaN(page)) page = 1
+      if (isNaN(limit)) limit = 10
+      if(!searchQuery) searchQuery = ''
+      const serviceList = await this.serviceInterface.findAllServicesWithCount(page,limit,searchQuery);
       return {
         status: 200,
         data: {

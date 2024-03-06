@@ -63,9 +63,13 @@ class AdminUsecase {
     }
   }
 
-  async getUsers() {
+  async getUsers(page:number, limit:number, searchQuery:string | undefined):Promise<any> {
     try {
-      const usersList = await this.userInterface.findAllUsers();
+      if (isNaN(page)) page = 1
+      if (isNaN(limit)) limit = 10
+      if(!searchQuery) searchQuery = ''
+      const usersList = await this.userInterface.findAllUsersWithCount(page, limit, searchQuery);
+      
       return {
         status: 200,
         data: {
@@ -80,9 +84,12 @@ class AdminUsecase {
     }
   }
 
-  async getVendors() {
+  async getVendors(page:number, limit:number,searchQuery:string | undefined) {
     try {
-      const vendorsList = await this.vendorInterface.findAllVendors();
+      if (isNaN(page)) page = 1
+      if (isNaN(limit)) limit = 10
+      if(!searchQuery) searchQuery = ''
+      const vendorsList = await this.vendorInterface.findAllVendorsWithCount(page,limit,searchQuery);
       return {
         status: 200,
         data: {

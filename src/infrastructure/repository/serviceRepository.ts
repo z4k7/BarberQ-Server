@@ -35,9 +35,49 @@ class ServiceRepository implements ServiceInterface {
     return allServices;
   }
 
+   async findAllServicesWithCount(page: number, limit: number, searchQuery: string): Promise<any> {
+      try {
+        const regex = new RegExp(searchQuery, 'i')
+      
+      const pipeline = [
+        {
+          $match: {
+            $or: [
+              { serviceName: { $regex: regex } },
+              { category: { $regex: regex } },
+            ]
+          }
+        },
+        {
+          $facet: {
+            totalCount: [{ $count: "count" }],
+            paginatedResults: [
+              { $skip: (page - 1) * limit },
+              { $limit: limit },
+              { $project: { password: 0 } },
+              
+            ]
+          }
+        }
+        ]
+        const [result]= await ServiceModel.aggregate(pipeline).exec()
+
+        const services = result.paginatedResults;
+        const serviceCount = (result.totalCount.length > 0) ? result.totalCount[0].count : 0
+        
+        return{
+          services,
+          serviceCount
+        }
+
+      } catch (error) {
+        
+      }
+  }
+
   async hideService(serviceId: string): Promise<any> {
     console.log(`Inside Repository`);
-    const serviceFound = await ServiceModel.findById(serviceId);
+    const serviceFound = await ServiceModel.findById(serviceId); 
     if (serviceFound) {
       serviceFound.isVisible = !serviceFound.isVisible;
       return serviceFound.save();

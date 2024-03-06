@@ -7,7 +7,7 @@ class AdminRepository implements AdminInterface{
 
     async findByEmail(email: string): Promise<any> {
          
-        const adminFound = await AdminModel.findOne({ email })
+        const adminFound = await AdminModel.findOne({ email }) 
         console.log(`from admin repository:`,adminFound);
         return adminFound
     }

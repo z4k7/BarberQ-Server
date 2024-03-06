@@ -6,6 +6,7 @@ interface UserInterface {
   findUserById(user: string): Promise<any>;
   findAllUsers(): Promise<any>;
   blockUnblockUser(userId: string): Promise<any>;
+  findAllUsersWithCount(page:number, limit:number, searchQuery:string):Promise<any>
 }
 
 export default UserInterface;

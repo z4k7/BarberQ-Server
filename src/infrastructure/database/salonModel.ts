@@ -1,76 +1,81 @@
 import mongoose, { Schema, Document, ObjectId } from "mongoose";
 
-export interface ISalon extends Document{
-    _id: string;
-    vendorId: ObjectId;
-    salonName: string;
-    landmark: string;
-    locality: string;
-    district: string;
-    location: object;
-    openingTime: string;
-    closingTime: string;
-    contactNumber: string;
-    googleMapLocation: string;
-    chairCount: string;
-    status: string;
-    banners: Array<string>;
-    facilities: Array<string>;
+export interface ISalon extends Document {
+  _id: string;
+  vendorId: ObjectId;
+  salonName: string;
+  landmark: string;
+  locality: string;
+  district: string;
+  location: object;
+  openingTime: string;
+  closingTime: string;
+  contactNumber: string;
+  googleMapLocation: string;
+  chairCount: string;
+  status: string;
+  banners: Array<string>;
+  facilities: Array<string>;
+  services: Array<string>;
 }
 
-const salonSchema: Schema = new Schema({
+const SalonSchema: Schema = new Schema(
+  {
     vendorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'Vendor'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Vendor",
     },
     salonName: {
-        type:String
+      type: String,
     },
     landmark: {
-        type:String
+      type: String,
     },
     locality: {
-        type:String
+      type: String,
     },
     district: {
-        type:String
+      type: String,
     },
     location: {
-        longitude: {
-            type:Number
-        },
-        latitude: {
-            type:Number
-        }
+      longitude: {
+        type: Number,
+      },
+      latitude: {
+        type: Number,
+      },
     },
     openingTime: {
-      type:String  
+      type: String,
     },
     closingTime: {
-        type:String
+      type: String,
     },
     contactNumber: {
-        type:String
+      type: String,
     },
     status: {
-        type: String,
-        default:'pending',
+      type: String,
+      default: "pending",
     },
     chairCount: {
-        type:String
+      type: String,
     },
     banners: {
-        type:Array
+      type: Array,
+      required: true,
     },
     facilities: {
-        type:Array
+      type: Array,
     },
-    
-},
-    {
-    timestamps:true
-}
-)
+    services: {
+      type: Array,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-const salonModel = mongoose.model<ISalon>('Salon', salonSchema)
-export default salonModel
+const SalonModel = mongoose.model<ISalon>("Salon", SalonSchema);
+export default SalonModel;
