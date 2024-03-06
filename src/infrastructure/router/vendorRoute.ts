@@ -22,4 +22,6 @@ route.post(
   (req, res) => salonController.addSalon(req, res)
 );
 
+route.get("/services",vendorAuth,(req,res)=>vendorController.getServices(req,res))
+
 export default route;

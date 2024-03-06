@@ -17,20 +17,21 @@ class SalonController {
         let vendorId = decoded.id;
 
         const banners = req.files;
-          const facilities = JSON.parse(req.body.facilities)
-          console.log('facilities',facilities)
+        const facilities = JSON.parse(req.body.facilities);
+        const location = JSON.parse(req.body.location);
+
+        console.log("facilities", facilities);
         const {
           salonName,
           landmark,
           locality,
-          location,
           district,
           openingTime,
           closingTime,
           contactNumber,
           chairCount,
-          // facilities,
-        } = req.body; 
+          services,
+        } = req.body;
 
         const salonData = {
           vendorId: vendorId,
@@ -45,6 +46,7 @@ class SalonController {
           chairCount,
           facilities,
           banners,
+          services,
         };
 
         const salonAdd = await this.salonUsecase.addSalon(salonData);
@@ -57,23 +59,20 @@ class SalonController {
 
   async getSalons(req: Request, res: Response) {
     try {
-
       console.log(`Inside salon controller get salons`);
 
-      const salonList = await this.salonUsecase.getSalons()
+      const salonList = await this.salonUsecase.getSalons();
       console.log(`SalonList:`, salonList);
-      return res.status(salonList.status).json(salonList)
+      return res.status(salonList.status).json(salonList);
     } catch (error) {
       return res.status(500).json({
         status: 500,
         success: false,
         message: "Internal Server Error",
-        error:(error as Error).message
-      })
+        error: (error as Error).message,
+      });
     }
   }
-
-
 }
 
 export default SalonController;

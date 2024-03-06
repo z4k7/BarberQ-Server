@@ -105,6 +105,22 @@ class VendorController {
       });
     }
   }
+
+
+  async getServices(req: Request, res: Response) {
+    try {
+      console.log(`Inside vendorCOntroller`);
+      const serviceList = await this.vendorUsecase.getServices()
+      return res.status(serviceList.status).json(serviceList)
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message:"Internal Server Error",
+        error:(error as Error).message
+      })
+    }
+  }
 }
 
 export default VendorController;

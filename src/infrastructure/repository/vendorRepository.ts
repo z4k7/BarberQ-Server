@@ -3,6 +3,7 @@ import VendorModel from "../database/vendorModel";
 import VendorInterface from "../../usecase/interface/vendorInterface";
 
 class VendorRepository implements VendorInterface {
+
   async saveVendor(vendor: IVendor): Promise<any> {
     const Vendor = new VendorModel(vendor);
     const savedVendor = await Vendor.save()
@@ -31,6 +32,7 @@ class VendorRepository implements VendorInterface {
     const vendorsList = await VendorModel.find();
     return vendorsList;
   }
+  
 
    async findAllVendorsWithCount(page: number, limit: number, searchQuery: string): Promise<any> {
      try {

@@ -19,4 +19,4 @@ route.post("/login", (req, res) => userController.userLogin(req, res));
 route.get("/salon",(req,res)=>salonController.getSalons(req,res) )
 
 
-export default route;
+export default route; 

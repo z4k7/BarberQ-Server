@@ -6,7 +6,7 @@ interface VendorInterface{
     findVendorById(vendor: string): Promise<any>
     findAllVendors(): Promise<any>
     blockUnblockVendor(vendorId: string): Promise<any>
-    findAllVendorsWithCount(page:number,limit:number,searchQuery:string):Promise<any>
+    findAllVendorsWithCount(page: number, limit: number, searchQuery: string): Promise<any>
 }
 
 export default VendorInterface

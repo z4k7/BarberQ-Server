@@ -58,6 +58,8 @@ class SalonUsecase {
     }
   }
 
+
+
 }
 
 export default SalonUsecase;

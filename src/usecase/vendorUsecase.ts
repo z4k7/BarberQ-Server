@@ -3,11 +3,13 @@ import Encrypt from "../infrastructure/utils/hashPassword";
 import GenerateOtp from "../infrastructure/utils/generateOtp";
 import SendOtp from "../infrastructure/utils/nodemailer";
 import VendorInterface from "./interface/vendorInterface";
+import ServiceInterface from "./interface/serviceInterface";
 import Ijwt from "./interface/jwtInterface";
 
 class VendorUsecase {
   constructor(
     private vendorInterface: VendorInterface,
+    private serviceInterface:ServiceInterface,
     private Encrypt: Encrypt,
     private generateOtp: GenerateOtp,
     private sendOtp: SendOtp,
@@ -122,7 +124,26 @@ class VendorUsecase {
   }
 
 
- 
+  async getServices() {
+    try {
+      console.log(`Inside Usecase`);
+      const serviceList = await this.serviceInterface.findAllServices()
+      console.log(`service list found`, serviceList);
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: "Service List Found",
+          salonData:serviceList
+        }
+      }
+    } catch (error) {
+      return {
+        status: 400,
+        data:error
+      }
+    }
+  }
 
 
 

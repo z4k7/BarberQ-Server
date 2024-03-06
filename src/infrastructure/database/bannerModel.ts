@@ -7,7 +7,8 @@ export interface IBanner extends Document{
 
 const bannerSchema: Schema = new Schema({
     banners: {
-        type:Array
+        type:Array,
+        required:true,
     }
 })
 const BannerModel = mongoose.model<IBanner>('Banner', bannerSchema)

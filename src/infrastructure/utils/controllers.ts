@@ -46,7 +46,7 @@ const cloudinary = new Cloudinary()
 
 const adminUsecase = new AdminUsecase(adminRepository,userRepository,vendorRepository,encrypt,jwtToken)
 const userUsecase = new UserUsecase(userRepository, encrypt, genOtp, sendOtp, jwtToken)
-const vendorUsecase = new VendorUsecase(vendorRepository,encrypt,genOtp,sendOtp,jwtToken)
+const vendorUsecase = new VendorUsecase(vendorRepository, serviceRepository,encrypt,genOtp,sendOtp,jwtToken)
 const serviceUsecase = new ServiceUsecase(serviceRepository)
 const salonUsecase = new SalonUsecase(salonRepository,cloudinary)
 
