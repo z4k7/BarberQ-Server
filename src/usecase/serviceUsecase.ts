@@ -30,7 +30,7 @@ class ServiceUsecase {
       );
       return {
         status: 200,
-        message:"Service Edited Successfully",
+        message: "Service Edited Successfully",
         data: serviceData || { message: "Internal Error" },
       };
     } catch (error) {
@@ -47,7 +47,7 @@ class ServiceUsecase {
       const serviceFound = await this.serviceInterface.findServiceByName(
         serviceName
       );
-      console.log(`serviceFound`,serviceFound);
+      console.log(`serviceFound`, serviceFound);
       return {
         status: 200,
         data: serviceFound,
@@ -60,12 +60,20 @@ class ServiceUsecase {
     }
   }
 
-  async getServices(page:number,limit:number,searchQuery:string|undefined) {
+  async getServices(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ) {
     try {
-      if (isNaN(page)) page = 1
-      if (isNaN(limit)) limit = 10
-      if(!searchQuery) searchQuery = ''
-      const serviceList = await this.serviceInterface.findAllServicesWithCount(page,limit,searchQuery);
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 10;
+      if (!searchQuery) searchQuery = "";
+      const serviceList = await this.serviceInterface.findAllServicesWithCount(
+        page,
+        limit,
+        searchQuery
+      );
       return {
         status: 200,
         data: {
@@ -78,6 +86,27 @@ class ServiceUsecase {
       return {
         status: 400,
         data: error,
+      };
+    }
+  }
+
+  async getServicesByIds(serviceIds: string[]) {
+    console.log(`inside getservice usecase`);
+    try {
+      const services = await this.serviceInterface.findServicesByIds(
+        serviceIds
+      );
+      console.log(`services from usecase`, services);
+
+      return {
+        status: 200,
+        data: services,
+      };
+    } catch (error) {
+      console.log(`inside catch from usecase`);
+      console.log(`Error in getServicesByIds:`, error);
+      return {
+        status: 400,
       };
     }
   }
