@@ -1,10 +1,12 @@
 import SalonInterface from "./interface/salonInterface";
+import ServiceInterface from "./interface/serviceInterface";
 import ISalon from "../domain/salon";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 
 class SalonUsecase {
   constructor(
     private salonInterface: SalonInterface,
+    private serviceInterface: ServiceInterface,
     private cloudinary: Cloudinary
   ) {}
 
@@ -26,6 +28,12 @@ class SalonUsecase {
 
       console.log(`uploadedBanners`, uploadedBanners);
 
+      // const serviceData = await this.serviceInterface.findServicesByIds(
+      //   salonData.services
+      // );
+
+      // salonData.services = serviceData;
+
       const salonStatus = await this.salonInterface.addSalon(salonData);
 
       return {
@@ -37,29 +45,53 @@ class SalonUsecase {
       throw error;
     }
   }
-
-
-  async getSalons() {
+  async getSalons(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ): Promise<any> {
     try {
-      const salonList = await this.salonInterface.findAllSalons()
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 12;
+      if (!searchQuery) searchQuery = "";
+
+      const salonList = await this.salonInterface.findAllSalonsWithCount(
+        page,
+        limit,
+        searchQuery
+      );
       return {
         status: 200,
         data: {
-          success: true,
-          message: "Salon List Found",
-          salonData: salonList
-        }
-      }
+          salonData: salonList,
+        },
+      };
     } catch (error) {
-      return{
+      return {
         status: 400,
-        data:error,
-      }
+        data: error,
+      };
     }
   }
 
-
-
+  // async getSalons() {
+  //   try {
+  //     const salonList = await this.salonInterface.findAllSalons();
+  //     return {
+  //       status: 200,
+  //       data: {
+  //         success: true,
+  //         message: "Salon List Found",
+  //         salonData: salonList,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       status: 400,
+  //       data: error,
+  //     };
+  //   }
+  // }
 }
 
 export default SalonUsecase;

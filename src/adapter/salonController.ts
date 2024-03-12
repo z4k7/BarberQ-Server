@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import { verify, JwtPayload } from "jsonwebtoken";
 import SalonUsecase from "../usecase/salonUsecase";
-
+import ServiceUsecase from "../usecase/serviceUsecase";
 class SalonController {
-  constructor(private salonUsecase: SalonUsecase) {}
+  constructor(
+    private salonUsecase: SalonUsecase,
+    private serviceUsecase: ServiceUsecase
+  ) {}
 
   async addSalon(req: Request, res: Response) {
     console.log(`Inside addSalon Controller`);
@@ -61,11 +64,41 @@ class SalonController {
     try {
       console.log(`Inside salon controller get salons`);
 
-      const salonList = await this.salonUsecase.getSalons();
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const searchQuery = req.query.searchQuery as string | undefined;
+
+      const salonList = await this.salonUsecase.getSalons(
+        page,
+        limit,
+        searchQuery
+      );
       console.log(`SalonList:`, salonList);
       return res.status(salonList.status).json(salonList);
     } catch (error) {
       return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async getServicesByIds(req: Request, res: Response) {
+    console.log(`Inside getServices controller`);
+    try {
+      const serviceIds = JSON.parse(req.query.serviceIds as string) as string[];
+      console.log(serviceIds, "serviceids");
+
+      const services = await this.serviceUsecase.getServicesByIds(serviceIds);
+
+      console.log(`services from controller`, services);
+
+      res.status(200).json({ services });
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      res.status(500).json({
         status: 500,
         success: false,
         message: "Internal Server Error",

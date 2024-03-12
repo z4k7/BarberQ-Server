@@ -14,6 +14,52 @@ class SalonRepository implements SalonInterface {
     const allSalons = await SalonModel.find();
     return allSalons;
   }
+
+  async findAllSalonsWithCount(
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<any> {
+    try {
+      const regex = new RegExp(searchQuery, "i");
+
+      const pipeline = [
+        {
+          $match: {
+            $or: [
+              { salonName: { $regex: regex } },
+              { locality: { $regex: regex } },
+              { district: { $regex: regex } },
+            ],
+          },
+        },
+        {
+          $facet: {
+            totalCount: [{ $count: "count" }],
+            paginatedResults: [
+              { $skip: (page - 1) * limit },
+              { $limit: limit },
+              { $project: { password: 0 } },
+            ],
+          },
+        },
+      ];
+
+      const [result] = await SalonModel.aggregate(pipeline).exec();
+
+      const salons = result.paginatedResults;
+      const salonCount =
+        result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+
+      return {
+        salons,
+        salonCount,
+      };
+    } catch (error) {
+      console.log(error);
+      throw Error("Error while getting salon data");
+    }
+  }
 }
 
 export default SalonRepository;
