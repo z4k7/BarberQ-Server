@@ -60,6 +60,70 @@ class SalonController {
     }
   }
 
+  async getSalonById(req: Request, res: Response) {
+    try {
+      console.log(`Inside salon controller getSalonById`);
+
+      const salonId = req.params.salonId as string;
+
+      const salonDetails = await this.salonUsecase.getSalonById(salonId);
+      console.log(`SalonDetails`, salonDetails);
+
+      return res.status(salonDetails.status).json(salonDetails);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async updateSalonServices(req: Request, res: Response) {
+    console.log(`Inside update salon controller`);
+    try {
+      const salonId = req.params.salonId;
+      const services = req.body;
+
+      const updatedSalon = await this.salonUsecase.updateSalonServices(
+        salonId,
+        services
+      );
+
+      console.log(`UpdatedSalon:`, updatedSalon);
+
+      res.status(200).json(updatedSalon);
+    } catch (error) {
+      console.error("Error updating salon services:", error);
+      res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async editSalonServices(req: Request, res: Response) {
+    console.log(`Inside service Edit Controller`);
+    try {
+      const salonId = req.params.salonId;
+      const servicesToEdit = req.body;
+
+      const updatedSalon = await this.salonUsecase.editSalonServices(
+        salonId,
+        servicesToEdit
+      );
+      console.log(`Updated Salon`, updatedSalon);
+      res.status(200).json(updatedSalon);
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
   async getSalons(req: Request, res: Response) {
     try {
       console.log(`Inside salon controller get salons`);
@@ -67,14 +131,32 @@ class SalonController {
       const page = parseInt(req.query.page as string);
       const limit = parseInt(req.query.limit as string);
       const searchQuery = req.query.searchQuery as string | undefined;
+      const vendorId = req.params.vendorId as string | undefined;
 
       const salonList = await this.salonUsecase.getSalons(
         page,
         limit,
+        vendorId,
         searchQuery
       );
       console.log(`SalonList:`, salonList);
       return res.status(salonList.status).json(salonList);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async getSalonDetaills(req: Request, res: Response) {
+    try {
+      const salonId = req.params.salonId as string;
+
+      const salonDetails = await this.salonUsecase.getSalonById(salonId);
+      return res.status(200).json(salonDetails);
     } catch (error) {
       return res.status(500).json({
         status: 500,
@@ -98,6 +180,27 @@ class SalonController {
       res.status(200).json({ services });
     } catch (error) {
       console.error("Error fetching services:", error);
+      res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async deleteSalonServices(req: Request, res: Response) {
+    const { salonId } = req.params;
+    const { serviceIds } = req.body;
+
+    try {
+      const result = await this.salonUsecase.deleteSalonServices(
+        salonId,
+        serviceIds
+      );
+
+      return res.status(200).json(result);
+    } catch (error) {
       res.status(500).json({
         status: 500,
         success: false,

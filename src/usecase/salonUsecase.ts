@@ -2,6 +2,7 @@ import SalonInterface from "./interface/salonInterface";
 import ServiceInterface from "./interface/serviceInterface";
 import ISalon from "../domain/salon";
 import Cloudinary from "../infrastructure/utils/cloudinary";
+import IService from "../domain/services";
 
 class SalonUsecase {
   constructor(
@@ -28,12 +29,6 @@ class SalonUsecase {
 
       console.log(`uploadedBanners`, uploadedBanners);
 
-      // const serviceData = await this.serviceInterface.findServicesByIds(
-      //   salonData.services
-      // );
-
-      // salonData.services = serviceData;
-
       const salonStatus = await this.salonInterface.addSalon(salonData);
 
       return {
@@ -48,22 +43,114 @@ class SalonUsecase {
   async getSalons(
     page: number,
     limit: number,
+    vendorId: string | undefined,
     searchQuery: string | undefined
   ): Promise<any> {
     try {
       if (isNaN(page)) page = 1;
       if (isNaN(limit)) limit = 12;
+      if (!vendorId) vendorId = "";
       if (!searchQuery) searchQuery = "";
 
       const salonList = await this.salonInterface.findAllSalonsWithCount(
         page,
         limit,
+        vendorId,
         searchQuery
       );
       return {
         status: 200,
         data: {
           salonData: salonList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async getSalonById(salonId: string): Promise<any> {
+    try {
+      const salonDetails = await this.salonInterface.findSalonById(salonId);
+      return {
+        status: 200,
+        data: { salonData: salonDetails },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async updateSalonServices(
+    salonId: string,
+    services: IService[]
+  ): Promise<any> {
+    try {
+      const updatedSalon = await this.salonInterface.updateSalonServices(
+        salonId,
+        services
+      );
+      return {
+        status: 200,
+        data: {
+          message: "Services updated successfully",
+          salonData: updatedSalon,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async editSalonServices(
+    salonId: string,
+    servicesToEdit: IService[]
+  ): Promise<any> {
+    try {
+      const updatedSalon = await this.salonInterface.editSalonServices(
+        salonId,
+        servicesToEdit
+      );
+
+      return {
+        status: 200,
+        data: {
+          message: "Services updated successfully",
+          salonData: updatedSalon,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async deleteSalonServices(
+    salonId: string,
+    serviceIds: string[]
+  ): Promise<any> {
+    try {
+      const updatedSalon = await this.salonInterface.deleteSalonServices(
+        salonId,
+        serviceIds
+      );
+
+      return {
+        status: 200,
+        data: {
+          message: "Services Deleted Successfully",
+          salonData: updatedSalon,
         },
       };
     } catch (error) {

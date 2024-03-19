@@ -90,6 +90,27 @@ class ServiceUsecase {
     }
   }
 
+  async getAllServices() {
+    try {
+      console.log(`Inside Usecase`);
+      const serviceList = await this.serviceInterface.findAllServices();
+      console.log(`service list found`, serviceList);
+      return {
+        status: 200,
+        data: {
+          success: true,
+          message: "Service List Found",
+          serviceData: serviceList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
   async getServicesByIds(serviceIds: string[]) {
     console.log(`inside getservice usecase`);
     try {

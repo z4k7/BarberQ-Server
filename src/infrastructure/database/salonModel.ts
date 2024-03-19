@@ -16,7 +16,7 @@ export interface ISalon extends Document {
   status: string;
   banners: Array<string>;
   facilities: Array<string>;
-  services: Array<string>;
+  services: Array<any>;
 }
 
 const SalonSchema: Schema = new Schema(

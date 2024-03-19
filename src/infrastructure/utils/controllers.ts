@@ -38,6 +38,7 @@ const adminUsecase = new AdminUsecase(
   adminRepository,
   userRepository,
   vendorRepository,
+  salonRepository,
   encrypt,
   jwtToken
 );
