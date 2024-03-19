@@ -55,10 +55,10 @@ class VendorController {
 
       return res.status(200).json({ response: emailResponse });
     } catch (error) {
-      console.log(`Error in resendOtp:`, error); 
+      console.log(`Error in resendOtp:`, error);
       return res.status(500).json({
         data: {
-          message: "Internal Server Error", 
+          message: "Internal Server Error",
           error: (error as Error).message,
         },
       });
@@ -103,22 +103,6 @@ class VendorController {
           error: (error as Error).message,
         },
       });
-    }
-  }
-
-
-  async getServices(req: Request, res: Response) {
-    try {
-      console.log(`Inside vendorCOntroller`);
-      const serviceList = await this.vendorUsecase.getServices()
-      return res.status(serviceList.status).json(serviceList)
-    } catch (error) {
-      return res.status(500).json({
-        status: 500,
-        success: false,
-        message:"Internal Server Error",
-        error:(error as Error).message
-      })
     }
   }
 }

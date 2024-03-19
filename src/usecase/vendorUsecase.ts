@@ -9,11 +9,11 @@ import Ijwt from "./interface/jwtInterface";
 class VendorUsecase {
   constructor(
     private vendorInterface: VendorInterface,
-    private serviceInterface:ServiceInterface,
+    private serviceInterface: ServiceInterface,
     private Encrypt: Encrypt,
     private generateOtp: GenerateOtp,
     private sendOtp: SendOtp,
-    private jwt: Ijwt,
+    private jwt: Ijwt
   ) {}
 
   async saveVendor(vendor: IVendor) {
@@ -122,31 +122,6 @@ class VendorUsecase {
       };
     }
   }
-
-
-  async getServices() {
-    try {
-      console.log(`Inside Usecase`);
-      const serviceList = await this.serviceInterface.findAllServices()
-      console.log(`service list found`, serviceList);
-      return {
-        status: 200,
-        data: {
-          success: true,
-          message: "Service List Found",
-          salonData:serviceList
-        }
-      }
-    } catch (error) {
-      return {
-        status: 400,
-        data:error
-      }
-    }
-  }
-
-
-
 }
 
 export default VendorUsecase;

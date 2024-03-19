@@ -1,4 +1,8 @@
-import { vendorController, salonController } from "../utils/controllers";
+import {
+  vendorController,
+  salonController,
+  serviceController,
+} from "../utils/controllers";
 import { vendorAuth } from "../middlewares/vendorAuth";
 import { multerMiddleware } from "../middlewares/multerMiddleware";
 
@@ -22,6 +26,27 @@ route.post(
   (req, res) => salonController.addSalon(req, res)
 );
 
-route.get("/services",vendorAuth,(req,res)=>vendorController.getServices(req,res))
+route.get("/services", vendorAuth, (req, res) =>
+  serviceController.getAllServices(req, res)
+);
+route.get("/salons/:vendorId", vendorAuth, (req, res) =>
+  salonController.getSalons(req, res)
+);
+
+route.get("/salons/salon-details/:salonId", vendorAuth, (req, res) =>
+  salonController.getSalonById(req, res)
+);
+
+route.put("/salons/:salonId/services", vendorAuth, (req, res) =>
+  salonController.updateSalonServices(req, res)
+);
+
+route.patch("/salons/:salonId/services", vendorAuth, (req, res) =>
+  salonController.editSalonServices(req, res)
+);
+
+route.delete("/salons/:salonId/services", vendorAuth, (req, res) =>
+  salonController.deleteSalonServices(req, res)
+);
 
 export default route;

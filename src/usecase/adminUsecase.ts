@@ -4,12 +4,14 @@ import UserInterface from "./interface/userInterface";
 import VendorInterface from "./interface/vendorInterface";
 import Encrypt from "../infrastructure/utils/hashPassword";
 import JwtToken from "../infrastructure/utils/jwtToken";
+import SalonInterface from "./interface/salonInterface";
 
 class AdminUsecase {
   constructor(
     private adminInterface: AdminInterface,
     private userInterface: UserInterface,
     private vendorInterface: VendorInterface,
+    private salonInterface: SalonInterface,
     private Encrypt: Encrypt,
     private jwtToken: JwtToken
   ) {}
@@ -24,8 +26,7 @@ class AdminUsecase {
           status: 401,
           data: {
             message: "Admin not Found!",
-            
-          }
+          },
         };
       }
 
@@ -39,8 +40,7 @@ class AdminUsecase {
           status: 401,
           data: {
             message: "Authentication Failed",
-            
-          }
+          },
         };
       }
 
@@ -63,13 +63,21 @@ class AdminUsecase {
     }
   }
 
-  async getUsers(page:number, limit:number, searchQuery:string | undefined):Promise<any> {
+  async getUsers(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ): Promise<any> {
     try {
-      if (isNaN(page)) page = 1
-      if (isNaN(limit)) limit = 10
-      if(!searchQuery) searchQuery = ''
-      const usersList = await this.userInterface.findAllUsersWithCount(page, limit, searchQuery);
-      
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 10;
+      if (!searchQuery) searchQuery = "";
+      const usersList = await this.userInterface.findAllUsersWithCount(
+        page,
+        limit,
+        searchQuery
+      );
+
       return {
         status: 200,
         data: {
@@ -84,12 +92,20 @@ class AdminUsecase {
     }
   }
 
-  async getVendors(page:number, limit:number,searchQuery:string | undefined) {
+  async getVendors(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ) {
     try {
-      if (isNaN(page)) page = 1
-      if (isNaN(limit)) limit = 10
-      if(!searchQuery) searchQuery = ''
-      const vendorsList = await this.vendorInterface.findAllVendorsWithCount(page,limit,searchQuery);
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 10;
+      if (!searchQuery) searchQuery = "";
+      const vendorsList = await this.vendorInterface.findAllVendorsWithCount(
+        page,
+        limit,
+        searchQuery
+      );
       return {
         status: 200,
         data: {
@@ -103,6 +119,35 @@ class AdminUsecase {
       };
     }
   }
+
+  // async getSalons(
+  //   page: number,
+  //   limit: number,
+  //   searchQuery: string | undefined
+  // ) {
+  //   try {
+  //     if (isNaN(page)) page = 1;
+  //     if (isNaN(limit)) limit = 10;
+  //     if (!searchQuery) searchQuery = "";
+
+  //     const salonsList = await this.salonInterface.findAllSalonsWithCount(
+  //       page,
+  //       limit,
+  //       searchQuery
+  //     );
+  //     return {
+  //       status: 200,
+  //       data: {
+  //         adminData: salonsList,
+  //       },
+  //     };
+  //   } catch (error) {
+  //     return {
+  //       status: 400,
+  //       data: error,
+  //     };
+  //   }
+  // }
 
   async blockUnblockUser(userId: string) {
     try {
