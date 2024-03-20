@@ -161,6 +161,27 @@ class SalonUsecase {
     }
   }
 
+  async updateSalon(salonId: string, update: any): Promise<any> {
+    try {
+      const updatedSalon = await this.salonInterface.updateSalon(
+        salonId,
+        update
+      );
+      return {
+        status: 200,
+        data: {
+          message: "Salon Updated Successfully",
+          salonData: updatedSalon,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
   // async getSalons() {
   //   try {
   //     const salonList = await this.salonInterface.findAllSalons();

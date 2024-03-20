@@ -15,6 +15,7 @@ interface SalonInterface {
   updateSalonServices(salonId: string, services: IService[]): Promise<any>;
   editSalonServices(salonId: string, servicesToEdit: IService[]): Promise<any>;
   deleteSalonServices(salonId: string, serviceIds: string[]): Promise<any>;
+  updateSalon(salonId: string, update: any): Promise<any>;
 }
 
 export default SalonInterface;
