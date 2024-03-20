@@ -103,6 +103,24 @@ class SalonController {
     }
   }
 
+  async updateSalon(req: Request, res: Response) {
+    try {
+      const salonId = req.params.salonId;
+      const update = req.body;
+
+      const updatedSalon = await this.salonUsecase.updateSalon(salonId, update);
+
+      console.log(`Updated Salon:`, updatedSalon);
+      res.status(200).json(updatedSalon);
+    } catch (error) {
+      res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
   async editSalonServices(req: Request, res: Response) {
     console.log(`Inside service Edit Controller`);
     try {

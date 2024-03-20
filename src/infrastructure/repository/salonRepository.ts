@@ -174,6 +174,27 @@ class SalonRepository implements SalonInterface {
       throw new Error("Failed to delete salon services");
     }
   }
+
+  async updateSalon(salonId: string, update: any): Promise<any> {
+    try {
+      const salon = await SalonModel.findById(salonId);
+      if (!salon) {
+        throw new Error("Salon not found");
+      }
+      salon.salonName = update.salonName || salon.salonName;
+      salon.contactNumber = update.contactNumber || salon.contactNumber;
+      salon.chairCount = update.chairCount || salon.chairCount;
+      salon.facilities = update.facilities || salon.facilities;
+
+      const updatedSalon = await salon.save();
+      return updatedSalon;
+    } catch (error) {
+      if (error instanceof mongoose.Error.CastError) {
+        throw new Error("Invalid salon ID");
+      }
+      throw error;
+    }
+  }
 }
 
 export default SalonRepository;

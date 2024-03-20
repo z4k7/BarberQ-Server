@@ -45,6 +45,10 @@ route.patch("/salons/:salonId/services", vendorAuth, (req, res) =>
   salonController.editSalonServices(req, res)
 );
 
+route.patch("/salons/:salonId", vendorAuth, (req, res) =>
+  salonController.updateSalon(req, res)
+);
+
 route.delete("/salons/:salonId/services", vendorAuth, (req, res) =>
   salonController.deleteSalonServices(req, res)
 );
