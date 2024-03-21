@@ -13,7 +13,7 @@ route.get("/resend-otp", (req, res) => userController.resendOtp(req, res));
 
 route.post("/login", (req, res) => userController.userLogin(req, res));
 
-route.get("/salon", (req, res) => salonController.getSalons(req, res));
+route.get("/salon", (req, res) => salonController.getActiveSalons(req, res));
 route.get("/salon/:salonId", (req, res) =>
   salonController.getSalonDetaills(req, res)
 );

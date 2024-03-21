@@ -60,6 +60,27 @@ class SalonController {
     }
   }
 
+  async updateSalonStatus(req: Request, res: Response) {
+    try {
+      console.log(`Request in controller`, req.body);
+      const salonId = req.params.salonId as string;
+      const status = req.body.status;
+
+      const salonDetails = await this.salonUsecase.updateSalonStatus(
+        salonId,
+        status
+      );
+
+      return res.status(salonDetails.status).json(salonDetails);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
   async getSalonById(req: Request, res: Response) {
     try {
       console.log(`Inside salon controller getSalonById`);
@@ -159,6 +180,29 @@ class SalonController {
       );
       console.log(`SalonList:`, salonList);
       return res.status(salonList.status).json(salonList);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async getActiveSalons(req: Request, res: Response) {
+    try {
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const searchQuery = req.query.searchQuery as string | undefined;
+
+      const activeSalons = await this.salonUsecase.getActiveSalons(
+        page,
+        limit,
+        searchQuery
+      );
+
+      res.status(200).json(activeSalons);
     } catch (error) {
       return res.status(500).json({
         status: 500,

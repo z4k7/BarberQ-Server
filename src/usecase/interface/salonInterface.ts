@@ -10,12 +10,17 @@ interface SalonInterface {
     vendorId: string,
     searchQuery: string
   ): Promise<any>;
-
+  findActiveSalons(
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<any>;
   findSalonById(salonId: string): Promise<any>;
   updateSalonServices(salonId: string, services: IService[]): Promise<any>;
   editSalonServices(salonId: string, servicesToEdit: IService[]): Promise<any>;
   deleteSalonServices(salonId: string, serviceIds: string[]): Promise<any>;
   updateSalon(salonId: string, update: any): Promise<any>;
+  updateSalonStatus(salonId: string, status: string): Promise<any>;
 }
 
 export default SalonInterface;

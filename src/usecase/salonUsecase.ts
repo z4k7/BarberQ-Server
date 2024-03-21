@@ -71,6 +71,29 @@ class SalonUsecase {
       };
     }
   }
+  async getActiveSalons(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ): Promise<any> {
+    try {
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 12;
+      if (!searchQuery) searchQuery = "";
+
+      const activeSalons = await this.salonInterface.findActiveSalons(
+        page,
+        limit,
+        searchQuery
+      );
+      return { status: 200, data: { salonData: activeSalons } };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
 
   async getSalonById(salonId: string): Promise<any> {
     try {
@@ -78,6 +101,27 @@ class SalonUsecase {
       return {
         status: 200,
         data: { salonData: salonDetails },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+  async updateSalonStatus(salonId: string, status: string): Promise<any> {
+    try {
+      const updatedSalon = await this.salonInterface.updateSalonStatus(
+        salonId,
+        status
+      );
+
+      return {
+        status: 200,
+        data: {
+          message: "Status updated successfully",
+          salonData: updatedSalon,
+        },
       };
     } catch (error) {
       return {
