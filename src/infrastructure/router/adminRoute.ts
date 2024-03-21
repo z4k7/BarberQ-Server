@@ -30,6 +30,12 @@ route.patch("/vendors/block/:id", adminAuth, (req, res) =>
 route.get("/salons", adminAuth, (req, res) =>
   salonController.getSalons(req, res)
 );
+route.get("/salons/salon-details/:salonId", adminAuth, (req, res) =>
+  salonController.getSalonById(req, res)
+);
+route.patch("/salons/:salonId/status", adminAuth, (req, res) =>
+  salonController.updateSalonStatus(req, res)
+);
 
 // *Admin-Service Routes
 route.get("/services", adminAuth, (req, res) =>
