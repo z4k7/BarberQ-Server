@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import { verify, JwtPayload } from "jsonwebtoken";
 import SalonUsecase from "../usecase/salonUsecase";
 import ServiceUsecase from "../usecase/serviceUsecase";
+import RazorpayClass from "../infrastructure/utils/razorpay";
+
 class SalonController {
+  razorpay = new RazorpayClass();
+
   constructor(
     private salonUsecase: SalonUsecase,
     private serviceUsecase: ServiceUsecase
@@ -269,6 +273,37 @@ class SalonController {
         message: "Internal Server Error",
         error: (error as Error).message,
       });
+    }
+  }
+
+  async approveSalon(req: Request, res: Response) {
+    try {
+      const order = await this.razorpay.createOrder(2000);
+
+      console.log(`Inside approve salon`);
+      res.status(200).json({ order });
+    } catch (error) {
+      console.error("Error creating payment order", error);
+      res.status(500).json({ message: "Failed to create payment order" });
+    }
+  }
+
+  async verifyPayment(req: Request, res: Response) {
+    const { razorpayPaymentId, razorpayOrderId, razorpaySignature } = req.body;
+    try {
+      const isPaymentVerified = await this.razorpay.verifyPayment(
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature
+      );
+      if (isPaymentVerified) {
+        res.status(200).json({ message: "Payment verified successfully" });
+      } else {
+        res.status(400).json({ message: "Payment verification failed" });
+      }
+    } catch (error) {
+      console.error("Error verifying payment", error);
+      res.status(500).json({ message: "Failed to verify payment" });
     }
   }
 }

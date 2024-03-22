@@ -51,7 +51,24 @@ class SalonRepository implements SalonInterface {
         status: "approved",
       };
 
+      const lookupStage = {
+        $lookup: {
+          from: "vendors",
+          localField: "vendorId",
+          foreignField: "_id",
+          as: "vendor",
+        },
+      };
+
+      const unblockedVendorMatchStage = {
+        $match: {
+          "vendor.isBlocked": { $ne: true },
+        },
+      };
+
       const pipeline = [
+        lookupStage,
+        unblockedVendorMatchStage,
         { $match: matchStage },
         {
           $facet: {

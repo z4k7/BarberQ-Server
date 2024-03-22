@@ -53,4 +53,18 @@ route.delete("/salons/:salonId/services", vendorAuth, (req, res) =>
   salonController.deleteSalonServices(req, res)
 );
 
+route.patch("/salons/:salonId/status", vendorAuth, (req, res) =>
+  salonController.updateSalonStatus(req, res)
+);
+
+// * Razorpay Routes
+
+route.post("/salons/approve", vendorAuth, (req, res) =>
+  salonController.approveSalon(req, res)
+);
+
+route.post("/salons/verify-payment", vendorAuth, (req, res) =>
+  salonController.verifyPayment(req, res)
+);
+
 export default route;
