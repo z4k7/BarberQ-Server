@@ -56,6 +56,8 @@ class SalonController {
           services,
         };
 
+        console.log(`Salon Data`, salonData);
+
         const salonAdd = await this.salonUsecase.addSalon(salonData);
         res.status(200).json(salonAdd);
       }

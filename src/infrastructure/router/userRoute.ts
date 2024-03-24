@@ -1,5 +1,9 @@
 import { userAuth } from "../middlewares/userAuth";
-import { salonController, userController } from "../utils/controllers";
+import {
+  bookingController,
+  salonController,
+  userController,
+} from "../utils/controllers";
 
 import express from "express";
 const route = express.Router();
@@ -19,6 +23,16 @@ route.get("/salon/:salonId", (req, res) =>
 );
 route.get("/salon/get-services", (req, res) =>
   salonController.getServicesByIds(req, res)
+);
+
+// * Booking Routes
+
+route.get("/salons/available-slots", (req, res) =>
+  bookingController.getAvailableSlots(req, res)
+);
+
+route.post("/salons/book-slot", (req, res) =>
+  bookingController.bookSlot(req, res)
 );
 
 export default route;

@@ -3,6 +3,7 @@ import UserRepository from "../repository/userRepository";
 import VendorRepository from "../repository/vendorRepository";
 import ServiceRepository from "../repository/serviceRepository";
 import SalonRepository from "../repository/salonRepository";
+import BookingRepository from "../repository/bookingRepository";
 
 import Encrypt from "./hashPassword";
 import GenerateOtp from "./generateOtp";
@@ -15,18 +16,21 @@ import VendorUsecase from "../../usecase/vendorUsecase";
 import UserUsecase from "../../usecase/userUsecase";
 import ServiceUsecase from "../../usecase/serviceUsecase";
 import SalonUsecase from "../../usecase/salonUsecase";
+import BookingUsecase from "../../usecase/bookingUsecase";
 
 import AdminController from "../../adapter/adminController";
 import VendorController from "../../adapter/vendorController";
 import UserController from "../../adapter/userController";
 import ServiceController from "../../adapter/serviceController";
 import SalonController from "../../adapter/salonController";
+import BookingController from "../../adapter/bookingController";
 
 const adminRepository = new AdminRepository();
 const vendorRepository = new VendorRepository();
 const userRepository = new UserRepository();
 const serviceRepository = new ServiceRepository();
 const salonRepository = new SalonRepository();
+const bookingRepository = new BookingRepository();
 
 const encrypt = new Encrypt();
 const genOtp = new GenerateOtp();
@@ -64,6 +68,8 @@ const salonUsecase = new SalonUsecase(
   cloudinary
 );
 
+const bookingUsecase = new BookingUsecase(bookingRepository, salonRepository);
+
 export const adminController = new AdminController(adminUsecase);
 export const vendorController = new VendorController(vendorUsecase);
 export const userController = new UserController(userUsecase);
@@ -72,3 +78,4 @@ export const salonController = new SalonController(
   salonUsecase,
   serviceUsecase
 );
+export const bookingController = new BookingController(bookingUsecase);
