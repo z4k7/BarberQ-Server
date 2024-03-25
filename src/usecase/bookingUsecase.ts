@@ -47,7 +47,7 @@ class BookingUsecase {
     salonId: string,
     services: string[],
     date: string
-  ): Promise<{ time: string; chair: number }[]> {
+  ): Promise<string[]> {
     console.log(`Inside usecase available slots`);
     const salon = await this.salonInterface.findSalonById(salonId);
     const totalDuration = this.calculateTotalDuration(salon, services);
@@ -64,22 +64,31 @@ class BookingUsecase {
 
   private calculateTotalDuration(salon: ISalon, services: string[]): number {
     let totalDuration = 0;
-    services.forEach((serviceId) => {
-      const service = salon.services.find((s) => s._id === serviceId);
 
+    if (Array.isArray(services)) {
+      services.forEach((serviceId) => {
+        const service = salon.services.find((s) => s._id === serviceId);
+        if (service) {
+          totalDuration += service.duration;
+        }
+      });
+    } else {
+      const service = salon.services.find((s) => s._id === services);
       if (service) {
         totalDuration += service.duration;
       }
-    });
+    }
     return totalDuration;
   }
 
-  async getAvailableChair(
+  private async getAvailableChair(
     salonId: string,
     date: string,
     time: string,
     duration: number
   ): Promise<number | null> {
+    console.log(`Inside get available chair`);
+    console.log(`Date in getavailable chair:`, date);
     const bookedChairs = await this.bookingInterface.getBookedChairs(
       salonId,
       date,
@@ -108,6 +117,10 @@ class BookingUsecase {
   }
 
   private calculateEndTime(startTime: string, duration: number): string {
+    if (!startTime) {
+      throw new Error("Start time is undefined");
+    }
+
     const [hours, minutes] = startTime.split(":").map(Number);
     const durationHours = Math.floor(duration / 60);
     const durationMinutes = duration % 60;

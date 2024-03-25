@@ -1,5 +1,3 @@
-import { ObjectId } from "mongoose";
-
 interface IBooking {
   salonId?: string;
   userId?: string;

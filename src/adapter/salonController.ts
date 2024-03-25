@@ -27,7 +27,6 @@ class SalonController {
         const facilities = JSON.parse(req.body.facilities);
         const location = JSON.parse(req.body.location);
 
-        console.log("facilities", facilities);
         const {
           salonName,
           landmark,
@@ -55,8 +54,6 @@ class SalonController {
           banners,
           services,
         };
-
-        console.log(`Salon Data`, salonData);
 
         const salonAdd = await this.salonUsecase.addSalon(salonData);
         res.status(200).json(salonAdd);
