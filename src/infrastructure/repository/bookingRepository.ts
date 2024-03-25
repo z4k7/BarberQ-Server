@@ -1,4 +1,4 @@
-import BookingModel from "../database/bookings";
+import BookingModel from "../database/bookingModel";
 import BookingInterface from "../../usecase/interface/bookingInterface";
 import IBooking from "../../domain/booking";
 import SalonModel from "../database/salonModel";
@@ -13,31 +13,32 @@ class BookingRepository implements BookingInterface {
     salonId: string,
     date: string,
     duration: number
-  ): Promise<{ time: string; chair: number }[]> {
+  ): Promise<string[]> {
     const salon = await this.findSalonById(salonId);
-    console.log(`Salon`, salon);
     const openingTime = salon?.openingTime;
     const closingTime = salon?.closingTime;
+    const totalChairs = salon?.chairCount || 1;
+    const availableSlots: string[] = [];
 
-    const availableSlots = [];
     let currentTime = openingTime;
-
-    console.log(`opening time`, openingTime);
-    console.log(`closingTIme`, closingTime);
 
     while (currentTime < closingTime) {
       const endTime = this.calculateEndTime(currentTime, duration);
 
       if (endTime <= closingTime) {
-        const isSlotAvailable = await this.isSlotAvailable(
+        const bookedChairs = await this.getBookedChairs(
           salonId,
           date,
-          currentTime,
-          endTime
+          currentTime
         );
 
-        if (isSlotAvailable) {
-          availableSlots.push({ time: currentTime, chair: 1 });
+        const availableChairs = Array.from(
+          { length: totalChairs },
+          (_, i) => i + 1
+        ).filter((chair) => !bookedChairs.includes(chair));
+
+        if (availableChairs.length > 0) {
+          availableSlots.push(currentTime);
         }
       }
       currentTime = endTime;
@@ -62,27 +63,12 @@ class BookingRepository implements BookingInterface {
     endTime: string,
     chair: number
   ): Promise<boolean> {
+    console.log(`Date in repository`, date);
+
     const existingBooking = await BookingModel.findOne({
       salonId,
       date,
       chair,
-      $or: [
-        { time: { $lte: endTime }, endTime: { $gte: startTime } },
-        { time: { $gte: startTime }, endTime: { $lte: endTime } },
-      ],
-    });
-    return !existingBooking;
-  }
-
-  private async isSlotAvailable(
-    salonId: string,
-    date: string,
-    startTime: string,
-    endTime: string
-  ): Promise<boolean> {
-    const existingBooking = await BookingModel.findOne({
-      salonId,
-      date,
       $or: [
         { time: { $lte: endTime }, endTime: { $gte: startTime } },
         { time: { $gte: startTime }, endTime: { $lte: endTime } },

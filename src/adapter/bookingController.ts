@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import IBooking from "../domain/booking";
 import BookingUsecase from "../usecase/bookingUsecase";
 
 class BookingController {
@@ -9,6 +8,8 @@ class BookingController {
     try {
       console.log(`Inside bookslot controller`);
       const { salonId, userId, services, date, time } = req.body;
+
+      console.log(`Date in controller:`, req.body.date);
 
       const booking = await this.bookingUsecase.bookSlot(
         userId,

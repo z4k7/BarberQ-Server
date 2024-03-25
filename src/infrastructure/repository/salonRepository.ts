@@ -48,7 +48,7 @@ class SalonRepository implements SalonInterface {
           { locality: { $regex: regex } },
           { district: { $regex: regex } },
         ],
-        status: "approved",
+        status: "active",
       };
 
       const lookupStage = {
@@ -275,6 +275,8 @@ class SalonRepository implements SalonInterface {
       salon.contactNumber = update.contactNumber || salon.contactNumber;
       salon.chairCount = update.chairCount || salon.chairCount;
       salon.facilities = update.facilities || salon.facilities;
+      salon.openingTime = update.openingTime || salon.openingTime;
+      salon.closingTime = update.closingTime || salon.closingTime;
 
       const updatedSalon = await salon.save();
       return updatedSalon;

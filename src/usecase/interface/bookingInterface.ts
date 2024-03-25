@@ -6,7 +6,7 @@ interface BookingInterface {
     salonId: string,
     date: string,
     duration: number
-  ): Promise<{ time: string; chair: number }[]>;
+  ): Promise<string[]>;
   getBookedChairs(
     salonId: string,
     date: string,
