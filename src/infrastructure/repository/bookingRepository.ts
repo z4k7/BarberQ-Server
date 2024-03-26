@@ -2,6 +2,7 @@ import BookingModel from "../database/bookingModel";
 import BookingInterface from "../../usecase/interface/bookingInterface";
 import IBooking from "../../domain/booking";
 import SalonModel from "../database/salonModel";
+import mongoose from "mongoose";
 
 class BookingRepository implements BookingInterface {
   async createBooking(booking: IBooking): Promise<IBooking> {
@@ -96,6 +97,62 @@ class BookingRepository implements BookingInterface {
   private async findSalonById(salonId: string): Promise<any> {
     const salonDetails = await SalonModel.findById(salonId);
     return salonDetails;
+  }
+
+  async findBookingById(bookingId: string): Promise<any> {
+    const booking = await BookingModel.findById(bookingId);
+    return booking;
+  }
+
+  async findAllBookingsWithCount(
+    page: number,
+    limit: number,
+    userId: string,
+    searchQuery: string
+  ): Promise<any> {
+    try {
+      const regex = new RegExp(searchQuery, "i");
+
+      const matchStage: any = {
+        $or: [
+          { salonName: { $regex: regex } },
+          { orderStatus: { $regex: regex } },
+          { date: { $regex: regex } },
+        ],
+      };
+
+      if (userId !== "") {
+        matchStage["userId"] = new mongoose.Types.ObjectId(userId);
+      }
+
+      const pipeline = [
+        { $match: matchStage },
+        {
+          $facet: {
+            totalCount: [{ $count: "count" }],
+            paginatedResults: [
+              { $skip: (page - 1) * limit },
+              { $limit: limit },
+              { $project: { password: 0 } },
+            ],
+          },
+        },
+      ];
+
+      const [result] = await BookingModel.aggregate(pipeline).exec();
+
+      const bookings = result.paginatedResults;
+      const bookingsCount =
+        result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+
+      return {
+        bookings,
+        bookingsCount,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error("Error while getting salon data");
+    }
   }
 }
 

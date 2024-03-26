@@ -5,8 +5,9 @@ export interface IBooking extends Document {
   _id?: ObjectId;
   salonId: string;
   userId: string;
-  userName: string;
-  userMobile: string;
+  salonName?: string;
+  userName?: string;
+  userMobile?: string;
   chairNumber: number;
   time: string;
   startTime: string;
@@ -15,6 +16,10 @@ export interface IBooking extends Document {
   cancelReason: string;
   services: Array<any>;
   totalAmount: number;
+  totalDuration: number;
+  orderStatus: string;
+  paymentId: string;
+  choosedServices: Array<string>;
 }
 
 const bookingSchema: Schema = new Schema({
@@ -25,6 +30,9 @@ const bookingSchema: Schema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+  },
+  salonName: {
+    type: String,
   },
   userName: {
     type: String,
@@ -57,14 +65,18 @@ const bookingSchema: Schema = new Schema({
   services: {
     type: Array,
   },
+  choosedServices: { type: Array },
   totalAmount: {
+    type: Number,
+  },
+  totalDuration: {
     type: Number,
   },
   appliedCoupon: {
     type: Object,
   },
-  walletAmountUsed: {
-    type: Number,
+  paymentId: {
+    type: String,
   },
 });
 

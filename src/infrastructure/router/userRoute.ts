@@ -25,6 +25,16 @@ route.get("/salon/get-services", (req, res) =>
   salonController.getServicesByIds(req, res)
 );
 
+// * payment Routes
+
+route.post("/salons/create-order", (req, res) =>
+  salonController.createPaymentOrder(req, res)
+);
+
+route.post("/salons/verify-payment", (req, res) =>
+  salonController.verifyPayment(req, res)
+);
+
 // * Booking Routes
 
 route.get("/salons/available-slots", (req, res) =>
@@ -33,6 +43,13 @@ route.get("/salons/available-slots", (req, res) =>
 
 route.post("/salons/book-slot", (req, res) =>
   bookingController.bookSlot(req, res)
+);
+
+route.get("/salons/bookings", (req, res) =>
+  bookingController.getBookings(req, res)
+);
+route.post("/salon/cancel-booking", (req, res) =>
+  bookingController.cancelBooking(req, res)
 );
 
 export default route;

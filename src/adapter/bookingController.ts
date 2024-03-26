@@ -7,13 +7,12 @@ class BookingController {
   async bookSlot(req: Request, res: Response) {
     try {
       console.log(`Inside bookslot controller`);
-      const { salonId, userId, services, date, time } = req.body;
-
-      console.log(`Date in controller:`, req.body.date);
+      const { salonId, userId, paymentId, services, date, time } = req.body;
 
       const booking = await this.bookingUsecase.bookSlot(
         userId,
         salonId,
+        paymentId,
         services,
         date,
         time
@@ -40,6 +39,47 @@ class BookingController {
       res.status(200).json(availableSlots);
     } catch (error) {
       res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  async getBookings(req: Request, res: Response) {
+    try {
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const userId = req.query.userId as string | undefined;
+      const searchQuery = req.query.searchQuery as string | undefined;
+
+      const bookingList = await this.bookingUsecase.getBookings(
+        page,
+        limit,
+        userId,
+        searchQuery
+      );
+      return res.status(bookingList.status).json(bookingList);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async cancelBooking(req: Request, res: Response) {
+    const { bookingId } = req.body;
+
+    try {
+      const booking = await this.bookingUsecase.cancelBooking(bookingId);
+
+      return res.status(booking.status).json(booking);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
     }
   }
 }

@@ -275,11 +275,13 @@ class SalonController {
     }
   }
 
-  async approveSalon(req: Request, res: Response) {
-    try {
-      const order = await this.razorpay.createOrder(2000);
+  async createPaymentOrder(req: Request, res: Response) {
+    const { amount } = req.body;
+    console.log(`Amount`, amount);
 
-      console.log(`Inside approve salon`);
+    try {
+      const order = await this.razorpay.createOrder(amount);
+      console.log(`Order`, order);
       res.status(200).json({ order });
     } catch (error) {
       console.error("Error creating payment order", error);
