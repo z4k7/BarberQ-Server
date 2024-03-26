@@ -30,18 +30,6 @@ const UserSchema: Schema = new Schema(
       type: Boolean,
       default: false,
     },
-    wallet: {
-      type: Number,
-      default: 0,
-    },
-    walletHistory: [
-      {
-        transactionType: String,
-        method: String,
-        amount: Number,
-        date: Date,
-      },
-    ],
   },
   {
     timestamps: true,

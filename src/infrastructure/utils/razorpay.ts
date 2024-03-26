@@ -1,4 +1,5 @@
 import Razorpay from "razorpay";
+import axios from "axios";
 
 class RazorpayClass {
   razorpay: Razorpay;
@@ -20,8 +21,8 @@ class RazorpayClass {
       const order = await this.razorpay.orders.create(options);
       return order;
     } catch (error) {
-      console.error("Error creating order", error);
-      throw error;
+      console.error("Error creating order inside util", error);
+      throw new Error("Failed to create order");
     }
   }
 
@@ -45,6 +46,39 @@ class RazorpayClass {
     } catch (error) {
       console.error("Error verifying payment");
       throw error;
+    }
+  }
+
+  async refund(paymentId: string, amount: number, currency = "INR") {
+    try {
+      const refundData = {
+        amount,
+      };
+      const config = {
+        auth: {
+          username: process.env.RAZORPAY_KEY_ID!,
+          password: process.env.RAZORPAY_KEY_SECRET!,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      axios
+        .post(
+          `https://api.razorpay.com/v1/payments/${paymentId}/refund`,
+          refundData,
+          config
+        )
+        .then((response) => {
+          console.log("Refund successful:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error during refund:", error.response.data);
+        });
+    } catch (error) {
+      console.error("Error creating order inside util", error);
+      throw new Error("Failed to create order");
     }
   }
 }

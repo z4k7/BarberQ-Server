@@ -19,6 +19,14 @@ interface BookingInterface {
     endTime: string,
     chair: number
   ): Promise<boolean>;
+  findAllBookingsWithCount(
+    page: number,
+    limit: number,
+    userId: string,
+    searchQuery: string
+  ): Promise<any>;
+
+  findBookingById(bookingId: string): Promise<any>;
 }
 
 export default BookingInterface;

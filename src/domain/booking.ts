@@ -1,6 +1,7 @@
 interface IBooking {
   salonId?: string;
   userId?: string;
+  salonName?: string;
   userName?: string;
   userMobile?: string;
   startTime?: string;
@@ -11,10 +12,12 @@ interface IBooking {
   totalDuration?: number;
   totalAmount?: number;
   services?: Array<any>;
+  orderStatus?: string;
+  paymentId?: string;
+  choosedServices?: Array<string>;
   appliedCoupon?: {
     couponName?: string;
   };
-  walletAmountUsed?: number;
 }
 
 export default IBooking;

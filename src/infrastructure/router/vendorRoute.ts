@@ -59,8 +59,8 @@ route.patch("/salons/:salonId/status", vendorAuth, (req, res) =>
 
 // * Razorpay Routes
 
-route.post("/salons/approve", vendorAuth, (req, res) =>
-  salonController.approveSalon(req, res)
+route.post("/salons/create-order", vendorAuth, (req, res) =>
+  salonController.createPaymentOrder(req, res)
 );
 
 route.post("/salons/verify-payment", vendorAuth, (req, res) =>
