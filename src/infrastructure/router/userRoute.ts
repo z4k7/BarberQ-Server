@@ -48,7 +48,7 @@ route.post("/salons/book-slot", (req, res) =>
 route.get("/salons/bookings", (req, res) =>
   bookingController.getBookings(req, res)
 );
-route.post("/salon/cancel-booking", (req, res) =>
+route.post("/salons/cancel-booking", (req, res) =>
   bookingController.cancelBooking(req, res)
 );
 
