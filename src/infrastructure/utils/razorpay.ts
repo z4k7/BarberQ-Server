@@ -51,6 +51,7 @@ class RazorpayClass {
 
   async refund(paymentId: string, amount: number, currency = "INR") {
     try {
+      console.log(`Inside refund`);
       const refundData = {
         amount,
       };
@@ -64,18 +65,12 @@ class RazorpayClass {
         },
       };
 
-      axios
-        .post(
-          `https://api.razorpay.com/v1/payments/${paymentId}/refund`,
-          refundData,
-          config
-        )
-        .then((response) => {
-          console.log("Refund successful:", response.data);
-        })
-        .catch((error) => {
-          console.error("Error during refund:", error.response.data);
-        });
+      const axiosResponse = await axios.post(
+        `https://api.razorpay.com/v1/payments/${paymentId}/refund`,
+        refundData,
+        config
+      );
+      return axiosResponse;
     } catch (error) {
       console.error("Error creating order inside util", error);
       throw new Error("Failed to create order");

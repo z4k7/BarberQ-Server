@@ -69,6 +69,8 @@ class BookingController {
   async cancelBooking(req: Request, res: Response) {
     const { bookingId } = req.body;
 
+    console.log(`Booking Id`, bookingId);
+
     try {
       const booking = await this.bookingUsecase.cancelBooking(bookingId);
 

@@ -104,6 +104,15 @@ class BookingRepository implements BookingInterface {
     return booking;
   }
 
+  async findBookingByIdAndUpdate(bookingId: string): Promise<any> {
+    const booking = await BookingModel.findByIdAndUpdate(
+      bookingId,
+      { orderStatus: "cancelled" },
+      { new: true }
+    );
+    return booking;
+  }
+
   async findAllBookingsWithCount(
     page: number,
     limit: number,

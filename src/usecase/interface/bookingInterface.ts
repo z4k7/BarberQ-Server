@@ -27,6 +27,7 @@ interface BookingInterface {
   ): Promise<any>;
 
   findBookingById(bookingId: string): Promise<any>;
+  findBookingByIdAndUpdate(bokingId: string): Promise<any>;
 }
 
 export default BookingInterface;

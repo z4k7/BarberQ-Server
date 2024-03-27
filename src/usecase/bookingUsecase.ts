@@ -45,12 +45,29 @@ class BookingUsecase {
   }
 
   async cancelBooking(bookingId: string): Promise<any> {
-    const booking = await this.bookingInterface.findBookingById(bookingId);
-
-    if (booking) {
-      const amount = booking.totalAmount;
-      const paymentId = booking.paymentId;
-      const refund = await this.razorpay.refund(paymentId, amount);
+    try {
+      const booking = await this.bookingInterface.findBookingById(bookingId);
+      if (booking) {
+        const amount = booking.totalAmount * 100;
+        const paymentId = booking.paymentId;
+        const refund = await this.razorpay.refund(paymentId, amount);
+        console.log("Refund inside bookingUsecase", refund.data);
+        if (refund.data.status == "processed") {
+          const updateBooking =
+            await this.bookingInterface.findBookingByIdAndUpdate(bookingId);
+          return {
+            status: 200,
+            data: {
+              bookingData: updateBooking,
+            },
+          };
+        }
+      }
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
     }
   }
 
