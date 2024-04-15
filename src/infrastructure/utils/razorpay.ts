@@ -18,11 +18,31 @@ class RazorpayClass {
         receipt: "receipt_order_id",
         payment_capture: 1,
       };
+
+      console.log(`Options`, options);
+
       const order = await this.razorpay.orders.create(options);
+      console.log(`Order`, order);
       return order;
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating order inside util", error);
-      throw new Error("Failed to create order");
+      // Check if error is an instance of Error or if it has a message property
+      if (error instanceof Error || error.message) {
+        console.error("Error message:", error.message);
+      } else {
+        // If error is not an instance of Error, log the entire error object
+        console.error("Error object:", error);
+      }
+
+      // Check if error has a response property and log relevant details
+      if (error.response) {
+        console.error("Error response data:", error.response.data);
+        console.error("Error response status:", error.response.status);
+        console.error("Error response headers:", error.response.headers);
+      }
+
+      // Throw a new Error with a more descriptive message
+      throw new Error("Failed to create order due to an unexpected error");
     }
   }
 

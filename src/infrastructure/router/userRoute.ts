@@ -1,6 +1,7 @@
 import { userAuth } from "../middlewares/userAuth";
 import {
   bookingController,
+  chatController,
   salonController,
   userController,
 } from "../utils/controllers";
@@ -50,6 +51,16 @@ route.get("/salons/bookings", (req, res) =>
 );
 route.post("/salons/cancel-booking", (req, res) =>
   bookingController.cancelBooking(req, res)
+);
+
+// * Chat Routes
+
+route.post("/newConversation", (req, res) =>
+  chatController.newConversation(req, res)
+);
+route.post("/addMessage", (req, res) => chatController.addMessage(req, res));
+route.get("/getMessages/:conversationId", (req, res) =>
+  chatController.getMessages(req, res)
 );
 
 export default route;

@@ -13,7 +13,6 @@ class SalonController {
   ) {}
 
   async addSalon(req: Request, res: Response) {
-    console.log(`Inside addSalon Controller`);
     try {
       const token = req.headers.authorization;
       if (token) {
@@ -65,7 +64,6 @@ class SalonController {
 
   async updateSalonStatus(req: Request, res: Response) {
     try {
-      console.log(`Request in controller`, req.body);
       const salonId = req.params.salonId as string;
       const status = req.body.status;
 
@@ -86,12 +84,9 @@ class SalonController {
 
   async getSalonById(req: Request, res: Response) {
     try {
-      console.log(`Inside salon controller getSalonById`);
-
       const salonId = req.params.salonId as string;
 
       const salonDetails = await this.salonUsecase.getSalonById(salonId);
-      console.log(`SalonDetails`, salonDetails);
 
       return res.status(salonDetails.status).json(salonDetails);
     } catch (error) {
@@ -104,7 +99,6 @@ class SalonController {
   }
 
   async updateSalonServices(req: Request, res: Response) {
-    console.log(`Inside update salon controller`);
     try {
       const salonId = req.params.salonId;
       const services = req.body;
@@ -113,8 +107,6 @@ class SalonController {
         salonId,
         services
       );
-
-      console.log(`UpdatedSalon:`, updatedSalon);
 
       res.status(200).json(updatedSalon);
     } catch (error) {
@@ -134,7 +126,6 @@ class SalonController {
 
       const updatedSalon = await this.salonUsecase.updateSalon(salonId, update);
 
-      console.log(`Updated Salon:`, updatedSalon);
       res.status(200).json(updatedSalon);
     } catch (error) {
       res.status(500).json({
@@ -146,7 +137,6 @@ class SalonController {
   }
 
   async editSalonServices(req: Request, res: Response) {
-    console.log(`Inside service Edit Controller`);
     try {
       const salonId = req.params.salonId;
       const servicesToEdit = req.body;
@@ -155,7 +145,6 @@ class SalonController {
         salonId,
         servicesToEdit
       );
-      console.log(`Updated Salon`, updatedSalon);
       res.status(200).json(updatedSalon);
     } catch (error) {
       res.status(500).json({
@@ -168,8 +157,6 @@ class SalonController {
 
   async getSalons(req: Request, res: Response) {
     try {
-      console.log(`Inside salon controller get salons`);
-
       const page = parseInt(req.query.page as string);
       const limit = parseInt(req.query.limit as string);
       const searchQuery = req.query.searchQuery as string | undefined;
@@ -181,7 +168,6 @@ class SalonController {
         vendorId,
         searchQuery
       );
-      console.log(`SalonList:`, salonList);
       return res.status(salonList.status).json(salonList);
     } catch (error) {
       return res.status(500).json({
@@ -233,14 +219,10 @@ class SalonController {
   }
 
   async getServicesByIds(req: Request, res: Response) {
-    console.log(`Inside getServices controller`);
     try {
       const serviceIds = JSON.parse(req.query.serviceIds as string) as string[];
-      console.log(serviceIds, "serviceids");
 
       const services = await this.serviceUsecase.getServicesByIds(serviceIds);
-
-      console.log(`services from controller`, services);
 
       res.status(200).json({ services });
     } catch (error) {
@@ -277,11 +259,9 @@ class SalonController {
 
   async createPaymentOrder(req: Request, res: Response) {
     const { amount } = req.body;
-    console.log(`Amount`, amount);
 
     try {
       const order = await this.razorpay.createOrder(amount);
-      console.log(`Order`, order);
       res.status(200).json({ order });
     } catch (error) {
       console.error("Error creating payment order", error);

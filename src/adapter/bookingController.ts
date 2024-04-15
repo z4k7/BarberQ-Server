@@ -6,7 +6,6 @@ class BookingController {
 
   async bookSlot(req: Request, res: Response) {
     try {
-      console.log(`Inside bookslot controller`);
       const { salonId, userId, paymentId, services, date, time } = req.body;
 
       const booking = await this.bookingUsecase.bookSlot(
@@ -25,7 +24,6 @@ class BookingController {
   }
 
   async getAvailableSlots(req: Request, res: Response) {
-    console.log(`Inside available slots controller`);
     try {
       const { salonId, services, date } = req.query;
       const availableSlots = await this.bookingUsecase.getAvailableSlots(
@@ -33,8 +31,6 @@ class BookingController {
         services as string[],
         date as string
       );
-
-      console.log(`Available Slots`, availableSlots);
 
       res.status(200).json(availableSlots);
     } catch (error) {
@@ -68,8 +64,6 @@ class BookingController {
 
   async cancelBooking(req: Request, res: Response) {
     const { bookingId } = req.body;
-
-    console.log(`Booking Id`, bookingId);
 
     try {
       const booking = await this.bookingUsecase.cancelBooking(bookingId);

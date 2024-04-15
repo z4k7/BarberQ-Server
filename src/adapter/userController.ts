@@ -1,20 +1,23 @@
 import { Request, Response } from "express";
 import UserUsecase from "../usecase/userUsecase";
 import IUser from "../domain/user";
+import ChatUsecase from "../usecase/chatUsecase";
 
 class UserController {
-  constructor(private userUsecase: UserUsecase) {}
+  constructor(
+    private userUsecase: UserUsecase,
+    private chatUsecase: ChatUsecase
+  ) {}
 
   async userSignUp(req: Request, res: Response) {
     try {
       const newUser = req.body;
       const userExistence = await this.userUsecase.isEmailExist(newUser.email);
-      console.log(userExistence, "userExistence");
 
       if (userExistence.data) {
         return res
           .status(401)
-          .json({ data:{ message: "Email already in use"} });
+          .json({ data: { message: "Email already in use" } });
       }
 
       const verificationResponse = await this.userUsecase.verifyMail(
@@ -28,13 +31,13 @@ class UserController {
     } catch (error) {
       console.error("Error in signUp:", error);
       return res.status(500).json({
-        
-       data:{ message: "Internal Server Error",
-        error: (error as Error).message,}
+        data: {
+          message: "Internal Server Error",
+          error: (error as Error).message,
+        },
       });
     }
   }
-
 
   async resendOtp(req: Request, res: Response) {
     try {
@@ -60,21 +63,19 @@ class UserController {
     }
   }
 
-
-
   async userLogin(req: Request, res: Response) {
     try {
-      console.log("Login controller");
       const user = req.body;
       const userData = await this.userUsecase.userLogin(user);
-      console.log(`userData:`, userData);
       return res.status(userData.status).json(userData);
     } catch (error) {
       console.error("Error in login:", error);
       return res.status(500).json({
-       data: {status: 500,
-        message: "Internal Server Error",
-        error: (error as Error).message,}
+        data: {
+          status: 500,
+          message: "Internal Server Error",
+          error: (error as Error).message,
+        },
       });
     }
   }
@@ -89,7 +90,7 @@ class UserController {
         const savedUser = await this.userUsecase.saveUser(userToSave);
         return res.status(201).json({ userSave: savedUser });
       } else {
-        return res.status(401).json({ data:{ message: "Invalid OTP"} });
+        return res.status(401).json({ data: { message: "Invalid OTP" } });
       }
     } catch (error) {
       console.error("Error in otpVerification:", error);

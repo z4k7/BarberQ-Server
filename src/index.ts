@@ -1,7 +1,7 @@
 import { httpServer } from "./infrastructure/config/app";
 import { connectDb } from "./infrastructure/config/connectDb";
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from "dotenv";
+dotenv.config();
 
 const startServer = async () => {
   try {
@@ -9,12 +9,13 @@ const startServer = async () => {
 
     const app = httpServer;
     const PORT = process.env.PORT || 3000;
-    
-    app?.listen(PORT, () => console.log(`Connected to Server. running at ${PORT}`));
+
+    app?.listen(PORT, () =>
+      console.log(`Connected to Server. running at ${PORT}`)
+    );
   } catch (error) {
     console.log(error);
   }
 };
 
-startServer();   
- 
+startServer();

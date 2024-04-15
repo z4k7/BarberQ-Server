@@ -3,12 +3,17 @@ import ISalon from "../domain/salon";
 import RazorpayClass from "../infrastructure/utils/razorpay";
 import BookingInterface from "./interface/bookingInterface";
 import SalonInterface from "./interface/salonInterface";
-
+import NotificationService from "../infrastructure/utils/notificationService";
+import cron from "node-cron";
+import UserInterface from "./interface/userInterface";
 class BookingUsecase {
   razorpay = new RazorpayClass();
+
   constructor(
     private bookingInterface: BookingInterface,
-    private salonInterface: SalonInterface
+    private salonInterface: SalonInterface,
+    private userInterface: UserInterface,
+    private notificationService: NotificationService
   ) {}
 
   async getBookings(
@@ -83,6 +88,12 @@ class BookingUsecase {
     const salonName = salon.salonName;
     const { totalDuration, totalAmount, choosedServices } =
       this.calculateTotalDuration(salon, services);
+
+    const user = await this.userInterface.findUserById(userId);
+
+    const userName = user.name;
+    const userMobile = user.mobile;
+
     const availableChair = await this.getAvailableChair(
       salonId,
       date,
@@ -96,6 +107,8 @@ class BookingUsecase {
 
     const booking: IBooking = {
       userId,
+      userName,
+      userMobile,
       salonId,
       paymentId,
       services,
@@ -108,8 +121,32 @@ class BookingUsecase {
       salonName,
     };
 
+    console.log(`Booking in bookslot usecase`, booking);
+
     const createdBooking = await this.bookingInterface.createBooking(booking);
+    console.log(`Created Booking`, createdBooking);
+
+    this.scheduleNotification(createdBooking);
+
     return createdBooking;
+  }
+
+  private scheduleNotification(booking: IBooking): void {
+    const [dateString, timeString] = [booking.date, booking.time];
+    const [day, month, year] = dateString.split("-").map(Number);
+    const [hour, minute] = timeString.split(":").map(Number);
+
+    const notificationTime = new Date(year, month - 1, day, hour, minute - 7);
+
+    const cronExpression = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${
+      notificationTime.getMonth() + 1
+    } *`;
+
+    cron.schedule(cronExpression, async () => {
+      await this.notificationService.sendNotification(booking);
+    });
+
+    console.log(`Notification scheduled for booking ${booking.paymentId}`);
   }
 
   async getAvailableSlots(

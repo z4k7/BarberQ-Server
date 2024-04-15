@@ -37,7 +37,7 @@ export const adminAuth = async (
       res.status(401).json({ data: { message: "Token not available" } });
     }
   } catch (error) {
-    console.log("Unexpected Error:", error);
+    console.log("Unexpected Error in admin auth:", error);
     res.status(500).json({ data: { message: "Internal Server Error" } });
   }
 };

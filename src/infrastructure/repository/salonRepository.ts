@@ -6,7 +6,6 @@ import IService from "../../domain/services";
 
 class SalonRepository implements SalonInterface {
   async addSalon(salonData: ISalon): Promise<any> {
-    console.log(`Inside salon Repository addSalon`);
     const salon = new SalonModel(salonData);
     const salonRequest = await salon.save();
     return salonRequest;
@@ -104,7 +103,6 @@ class SalonRepository implements SalonInterface {
     searchQuery: string
   ): Promise<any> {
     try {
-      console.log(`Vendor ID inside repository`, vendorId);
       const regex = new RegExp(searchQuery, "i");
 
       const matchStage: any = {
@@ -202,8 +200,6 @@ class SalonRepository implements SalonInterface {
     servicesToEdit: IService[]
   ): Promise<any> {
     try {
-      console.log(`Inside edit repository`, servicesToEdit);
-
       const salon = await SalonModel.findById(salonId);
       if (!salon) {
         throw new Error("Salon not found");

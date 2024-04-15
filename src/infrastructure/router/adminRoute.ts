@@ -1,6 +1,7 @@
 import { adminAuth } from "../middlewares/adminAuth";
 import {
   adminController,
+  chatController,
   salonController,
   serviceController,
 } from "../utils/controllers";
@@ -49,6 +50,18 @@ route.put("/services/editService", adminAuth, (req, res) =>
 );
 route.patch("/services/hide/:id", adminAuth, (req, res) =>
   serviceController.hideService(req, res)
+);
+
+//* Chat Routes
+
+route.get("/get-all-conversations", adminAuth, (req, res) =>
+  chatController.getAllConversations(req, res)
+);
+route.get("/getMessages/:conversationId", adminAuth, (req, res) =>
+  chatController.getMessages(req, res)
+);
+route.post("/addMessage", adminAuth, (req, res) =>
+  chatController.addMessage(req, res)
 );
 
 export default route;

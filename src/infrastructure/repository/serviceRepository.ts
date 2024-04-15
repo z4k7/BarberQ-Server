@@ -78,7 +78,6 @@ class ServiceRepository implements ServiceInterface {
   }
 
   async hideService(serviceId: string): Promise<any> {
-    console.log(`Inside Repository`);
     const serviceFound = await ServiceModel.findById(serviceId);
     if (serviceFound) {
       serviceFound.isVisible = !serviceFound.isVisible;
