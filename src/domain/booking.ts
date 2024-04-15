@@ -3,11 +3,11 @@ interface IBooking {
   userId?: string;
   salonName?: string;
   userName?: string;
-  userMobile?: string;
+  userMobile: string;
   startTime?: string;
   endTime?: string;
-  time?: string;
-  date?: string;
+  time: string;
+  date: string;
   chairNumber?: number;
   totalDuration?: number;
   totalAmount?: number;

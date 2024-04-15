@@ -7,13 +7,11 @@ class ServiceController {
 
   async addService(req: Request, res: Response) {
     try {
-      console.log("req.body", req.body);
       const serviceExistence = await this.serviceUsecase.isServiceExist(
         req.body.serviceName
       );
 
       if (serviceExistence.data) {
-        console.log(`inside serviceExist`, serviceExistence.data);
         return res
           .status(401)
           .json({ data: false, message: "Service already exists" });
@@ -50,7 +48,6 @@ class ServiceController {
 
   async getAllServices(req: Request, res: Response) {
     try {
-      console.log(`Inside vendorCOntroller`);
       const serviceList = await this.serviceUsecase.getAllServices();
       return res.status(serviceList.status).json(serviceList);
     } catch (error) {
@@ -87,7 +84,6 @@ class ServiceController {
 
   async hideService(req: Request, res: Response) {
     try {
-      console.log(`Inside Controller`);
       const serviceFound = await this.serviceUsecase.hideService(req.params.id);
       return res.status(serviceFound.status).json(serviceFound);
     } catch (error) {

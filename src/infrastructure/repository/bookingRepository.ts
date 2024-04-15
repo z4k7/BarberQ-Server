@@ -21,23 +21,33 @@ class BookingRepository implements BookingInterface {
     const totalChairs = salon?.chairCount || 1;
     const availableSlots: string[] = [];
 
-    let currentTime = openingTime;
+    const requestedDate = date;
+    const currentDateObj = new Date();
+    const currentDate = `${currentDateObj
+      .getDate()
+      .toString()
+      .padStart(2, "0")}-${(currentDateObj.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}-${currentDateObj.getFullYear()}`;
 
+    const bookedChairs = await this.getBookedChairsForDate(
+      salonId,
+      requestedDate
+    );
+
+    let startTime =
+      requestedDate === currentDate
+        ? this.getCurrentTime()
+        : this.toTimeString(openingTime);
+
+    let currentTime = startTime;
     while (currentTime < closingTime) {
       const endTime = this.calculateEndTime(currentTime, duration);
-
       if (endTime <= closingTime) {
-        const bookedChairs = await this.getBookedChairs(
-          salonId,
-          date,
-          currentTime
-        );
-
         const availableChairs = Array.from(
           { length: totalChairs },
           (_, i) => i + 1
-        ).filter((chair) => !bookedChairs.includes(chair));
-
+        ).filter((chair) => !bookedChairs[currentTime]?.includes(chair));
         if (availableChairs.length > 0) {
           availableSlots.push(currentTime);
         }
@@ -46,6 +56,34 @@ class BookingRepository implements BookingInterface {
     }
 
     return availableSlots;
+  }
+
+  private async getBookedChairsForDate(
+    salonId: string,
+    date: string
+  ): Promise<{ [time: string]: number[] }> {
+    const bookings = await BookingModel.find({ salonId, date });
+    const bookedChairs: { [time: string]: number[] } = {};
+    bookings.forEach((booking) => {
+      if (!bookedChairs[booking.time]) {
+        bookedChairs[booking.time] = [];
+      }
+      bookedChairs[booking.time].push(booking.chairNumber);
+    });
+    return bookedChairs;
+  }
+
+  private getCurrentTime(): string {
+    const currentTimeString = new Date().toLocaleTimeString(undefined, {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return currentTimeString;
+  }
+
+  private toTimeString(time: string): string {
+    return time;
   }
 
   async getBookedChairs(
@@ -64,8 +102,6 @@ class BookingRepository implements BookingInterface {
     endTime: string,
     chair: number
   ): Promise<boolean> {
-    console.log(`Date in repository`, date);
-
     const existingBooking = await BookingModel.findOne({
       salonId,
       date,

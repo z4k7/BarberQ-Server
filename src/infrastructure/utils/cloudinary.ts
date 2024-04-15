@@ -14,16 +14,14 @@ class Cloudinary implements CloudinaryInterface {
     try {
       const maxBytes = 10485760;
 
-        if (file.size > maxBytes) {
-          throw new Error("File sie too large, Maximum is 10MB")
-        }
-        const result = await cloudinary.uploader.upload(file?.path, {
-            resource_type: 'auto',
-            quality_auto:'best',
-        })
-      return result.secure_url
-
-      
+      if (file.size > maxBytes) {
+        throw new Error("File sie too large, Maximum is 10MB");
+      }
+      const result = await cloudinary.uploader.upload(file?.path, {
+        resource_type: "auto",
+        quality_auto: "best",
+      });
+      return result.secure_url;
     } catch (error) {
       console.error("Error uploading image to Cloudinary", error);
       throw error;
@@ -31,4 +29,4 @@ class Cloudinary implements CloudinaryInterface {
   }
 }
 
-export default Cloudinary; 
+export default Cloudinary;

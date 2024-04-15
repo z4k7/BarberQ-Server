@@ -21,11 +21,13 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^3.0.3",
     "node-schedule": "^2.1.1",
     "nodemailer": "^6.9.8",
     "nodemon": "^3.0.3",
     "razorpay": "^2.9.2",
     "socket.io": "^4.7.5",
+    "twilio": "^5.0.3",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
@@ -36,6 +38,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.11.13",
+    "@types/node-cron": "^3.0.11",
     "@types/node-schedule": "^2.1.6",
     "@types/nodemailer": "^6.4.14",
     "ts-node-dev": "^2.0.0"
