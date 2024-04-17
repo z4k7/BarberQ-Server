@@ -67,4 +67,11 @@ route.post("/salons/verify-payment", vendorAuth, (req, res) =>
   salonController.verifyPayment(req, res)
 );
 
+// *Dashboard Routes
+route.get("/dashboard/:vendorId", vendorAuth, (req, res) =>
+  salonController.getVendorDashboardData(req, res)
+);
+
+route.get("/dashboard/salon/:salonId",vendorAuth,(req,res)=>salonController.getSalonDashboardData(req,res));
+
 export default route;

@@ -25,6 +25,14 @@ class SalonRepository implements SalonInterface {
     return salonsWithUnblockedVendors;
   }
 
+  async findActiveSalonCount(): Promise<number> {
+    const activeSalonCount = await SalonModel.countDocuments({
+      status: "active",
+    });
+    console.log(`Salon Count`, activeSalonCount);
+    return activeSalonCount;
+  }
+
   async findAllSalons(): Promise<any> {
     const allSalons = await SalonModel.find();
     return allSalons;
@@ -295,6 +303,22 @@ class SalonRepository implements SalonInterface {
       const updatedSalon = await salon.save();
 
       return updatedSalon;
+    } catch (error) {
+      if (error instanceof mongoose.Error.CastError) {
+        throw new Error("Invalid salon ID");
+      }
+      throw error;
+    }
+  }
+
+  async findActiveSalonsByVendorId(vendorId: string): Promise<number> {
+    try {
+      const ObjectId = new mongoose.Types.ObjectId(vendorId);
+      const count = await SalonModel.countDocuments({
+        vendorId: ObjectId,
+        status: "active",
+      });
+      return count;
     } catch (error) {
       if (error instanceof mongoose.Error.CastError) {
         throw new Error("Invalid salon ID");

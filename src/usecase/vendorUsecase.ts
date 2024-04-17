@@ -3,13 +3,12 @@ import Encrypt from "../infrastructure/utils/hashPassword";
 import GenerateOtp from "../infrastructure/utils/generateOtp";
 import SendOtp from "../infrastructure/utils/nodemailer";
 import VendorInterface from "./interface/vendorInterface";
-import ServiceInterface from "./interface/serviceInterface";
 import Ijwt from "./interface/jwtInterface";
 
 class VendorUsecase {
   constructor(
     private vendorInterface: VendorInterface,
-    private serviceInterface: ServiceInterface,
+
     private Encrypt: Encrypt,
     private generateOtp: GenerateOtp,
     private sendOtp: SendOtp,

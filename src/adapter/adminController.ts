@@ -93,6 +93,20 @@ class AdminController {
       });
     }
   }
+
+  async getAdminData(req: Request, res: Response) {
+    try {
+      const dashboardData = await this.adminUsecase.getDashboardData();
+      return res.status(dashboardData.status).json(dashboardData);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
 }
 
 export default AdminController;

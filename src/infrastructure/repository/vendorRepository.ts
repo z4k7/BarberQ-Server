@@ -3,7 +3,6 @@ import VendorModel from "../database/vendorModel";
 import VendorInterface from "../../usecase/interface/vendorInterface";
 
 class VendorRepository implements VendorInterface {
-
   async saveVendor(vendor: IVendor): Promise<any> {
     const Vendor = new VendorModel(vendor);
     const savedVendor = await Vendor.save()
@@ -32,52 +31,61 @@ class VendorRepository implements VendorInterface {
     const vendorsList = await VendorModel.find();
     return vendorsList;
   }
-  
+  async findActiveVendorsCount(): Promise<number> {
+    const activeVendorsCount = await VendorModel.countDocuments({
+      isBlocked: "false",
+    });
+    console.log(`Vendor Count`, activeVendorsCount);
+    return activeVendorsCount;
+  }
 
-   async findAllVendorsWithCount(page: number, limit: number, searchQuery: string): Promise<any> {
-     try {
-       const regex = new RegExp(searchQuery, 'i')
-       
-       const pipeline = [
-         {
-           $match: {
-             $or: [
-             {name:{$regex:regex}},
-             {email:{$regex:regex}},
-             {mobile:{$regex:regex}},
-           ]
-           }
-         },
-         {
-           $facet: {
-             totalCount: [{ $count: 'count' }],
-             paginatedResults: [
-               { $skip: (page - 1) * limit },
-               { $limit: limit },
-               { $project: { password: 0 } },
-               
-             ]
-           }
-         }
-       ]
-       const [result] = await VendorModel.aggregate(pipeline).exec()
+  async findAllVendorsWithCount(
+    page: number,
+    limit: number,
+    searchQuery: string
+  ): Promise<any> {
+    try {
+      const regex = new RegExp(searchQuery, "i");
 
-       const vendors = result.paginatedResults
-       const vendorCount = (result.totalCount.length > 0) ? result.totalCount[0].count : 0
-       return {
-         vendors,
-         vendorCount
-       }
-        
-      } catch (error) {
-        console.log(error);
-      throw Error('Error while getting vendor data')
-      }
+      const pipeline = [
+        {
+          $match: {
+            $or: [
+              { name: { $regex: regex } },
+              { email: { $regex: regex } },
+              { mobile: { $regex: regex } },
+            ],
+          },
+        },
+        {
+          $facet: {
+            totalCount: [{ $count: "count" }],
+            paginatedResults: [
+              { $skip: (page - 1) * limit },
+              { $limit: limit },
+              { $project: { password: 0 } },
+            ],
+          },
+        },
+      ];
+      const [result] = await VendorModel.aggregate(pipeline).exec();
+
+      const vendors = result.paginatedResults;
+      const vendorCount =
+        result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+      return {
+        vendors,
+        vendorCount,
+      };
+    } catch (error) {
+      console.log(error);
+      throw Error("Error while getting vendor data");
+    }
   }
 
   async blockUnblockVendor(vendorId: string): Promise<any> {
     const vendorFound = await VendorModel.findById(vendorId);
-    console.log(`id`,vendorId);
+    console.log(`id`, vendorId);
     console.log(`inside repository`, vendorFound);
     if (vendorFound) {
       vendorFound.isBlocked = !vendorFound.isBlocked;

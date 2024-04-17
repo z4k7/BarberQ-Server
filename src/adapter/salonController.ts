@@ -287,6 +287,40 @@ class SalonController {
       res.status(500).json({ message: "Failed to verify payment" });
     }
   }
+
+  async getVendorDashboardData(req: Request, res: Response) {
+    try {
+      const vendorId = req.params.vendorId;
+      const dashboardData = await this.salonUsecase.getVendorDashboardData(
+        vendorId
+      );
+      return res.status(dashboardData.status).json(dashboardData);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async getSalonDashboardData(req: Request, res: Response) {
+    try {
+      const salonId = req.params.salonId;
+      const dashboardData = await this.salonUsecase.getSalonDashboardData(
+        salonId
+      );
+      return res.status(dashboardData.status).json(dashboardData);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
 }
 
 export default SalonController;
