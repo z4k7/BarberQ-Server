@@ -8,8 +8,27 @@ import cors from "cors";
 import { Server, Socket } from "socket.io";
 import ConversationRepository from "../repository/conversationRepository";
 import MessageRepository from "../repository/messageRepository";
+import UserRepository from "../repository/userRepository";
+import SalonRepository from "../repository/salonRepository";
+import BookingRepository from "../repository/bookingRepository";
+import NotificationService from "../utils/notificationService";
+import BookingUsecase from "../../usecase/bookingUsecase";
+import { bookingController } from "../utils/controllers";
+
+const userRepository = new UserRepository();
+const salonRepository = new SalonRepository();
+const bookingRepository = new BookingRepository();
+const notification = new NotificationService();
 const conversationRepository = new ConversationRepository();
 const messageRepository = new MessageRepository();
+const bookingUsecase = new BookingUsecase(
+  bookingRepository,
+  salonRepository,
+  userRepository,
+  notification
+);
+
+bookingUsecase.scheduleOrderCompletionCheck();
 
 console.log(`Inside config/app`);
 

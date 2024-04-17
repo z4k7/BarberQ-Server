@@ -21,6 +21,8 @@ interface SalonInterface {
   deleteSalonServices(salonId: string, serviceIds: string[]): Promise<any>;
   updateSalon(salonId: string, update: any): Promise<any>;
   updateSalonStatus(salonId: string, status: string): Promise<any>;
+  findActiveSalonCount(): Promise<number>;
+  findActiveSalonsByVendorId(vendorId: string): Promise<number>;
 }
 
 export default SalonInterface;

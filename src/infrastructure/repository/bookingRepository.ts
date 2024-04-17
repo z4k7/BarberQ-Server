@@ -140,10 +140,13 @@ class BookingRepository implements BookingInterface {
     return booking;
   }
 
-  async findBookingByIdAndUpdate(bookingId: string): Promise<any> {
+  async findBookingByIdAndUpdate(
+    bookingId: string,
+    refundId: string
+  ): Promise<any> {
     const booking = await BookingModel.findByIdAndUpdate(
       bookingId,
-      { orderStatus: "cancelled" },
+      { orderStatus: "cancelled", refundId: refundId },
       { new: true }
     );
     return booking;
@@ -199,6 +202,232 @@ class BookingRepository implements BookingInterface {
       throw new Error("Error while getting salon data");
     }
   }
+
+  async findBookingsToComplete(currentTime: Date): Promise<any[]> {
+    const bookings = await BookingModel.find({
+      orderStatus: "booked",
+    });
+    return bookings.filter((booking) => {
+      const endTime = this.calculateEndTime(
+        booking.time,
+        booking.totalDuration
+      );
+
+      const [day, month, year] = booking.date.split("-").map(Number);
+      const formattedDate = `${year}-${month.toString().padStart(2, "0")}-${day
+        .toString()
+        .padStart(2, "0")}`;
+
+      const bookingEndTime = new Date(`${formattedDate}T${endTime}:00`);
+
+      return currentTime > bookingEndTime;
+    });
+  }
+
+  async updateBookingStatus(
+    bookingId: string,
+    newStatus: string
+  ): Promise<any> {
+    return await BookingModel.findByIdAndUpdate(
+      bookingId,
+      { orderStatus: newStatus },
+      { new: true }
+    );
+  }
+
+  async findCompletedBookingsCount(): Promise<number> {
+    const completedBookingsCount = await BookingModel.countDocuments({
+      orderStatus: "completed",
+    });
+    return completedBookingsCount;
+  }
+
+  async findTotalRevenue(): Promise<number> {
+    const totalRevenue = await BookingModel.aggregate([
+      { $match: { orderStatus: "completed" } },
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+    ]);
+    return totalRevenue.length > 0 ? totalRevenue[0].total : 0;
+  }
+
+  async findTotalRevenueBySalonId(salonId: string): Promise<number> {
+    const totalRevenue = await BookingModel.aggregate([
+      { $match: { orderStatus: "completed", salonId: salonId } },
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+    ]);
+    console.log(`Total Revenue`, totalRevenue[0].total);
+    return totalRevenue.length > 0 ? totalRevenue[0].total : 0;
+  }
+
+  async findVendorRevenueAndBookingsByVendorId(
+    vendorId: string
+  ): Promise<{ totalRevenue: number; bookings: any[] }> {
+    const ObjectId = mongoose.Types.ObjectId;
+    const vendorObjectId = new ObjectId(vendorId);
+    const activeSalons = await SalonModel.find(
+      {
+        vendorId: vendorObjectId,
+        status: "active",
+      },
+      "_id"
+    );
+    const salonIds = activeSalons.map((salon) => salon._id);
+
+    const result = await BookingModel.aggregate([
+      { $match: { salonId: { $in: salonIds } } },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: {
+            $sum: {
+              $cond: [
+                { $eq: ["$orderStatus", "completed"] },
+                "$totalAmount",
+                0,
+              ],
+            },
+          },
+          bookings: {
+            $push: "$$ROOT",
+          },
+        },
+      },
+    ]);
+
+    return {
+      totalRevenue: result.length > 0 ? result[0].totalRevenue : 0,
+      bookings: result.length > 0 ? result[0].bookings : [],
+    };
+  }
+
+  // async findVendorRevenueAndBookingsByVendorId(
+  //   vendorId: string
+  // ): Promise<{ totalRevenue: number; totalBookings: number }> {
+  //   const ObjectId = new mongoose.Types.ObjectId(vendorId);
+  //   const activeSalons = await SalonModel.find(
+  //     {
+  //       vendorId: ObjectId,
+  //       status: "active",
+  //     },
+  //     "_id"
+  //   );
+  //   const salonIds = activeSalons.map((salon) => salon._id);
+
+  //   const result = await BookingModel.aggregate([
+  //     { $match: { salonId: { $in: salonIds } } },
+  //     {
+  //       $group: {
+  //         _id: null,
+  //         totalRevenue: {
+  //           $sum: {
+  //             $cond: [
+  //               { $eq: ["$orderStatus", "completed"] },
+  //               "$totalAmount",
+  //               0,
+  //             ],
+  //           },
+  //         },
+  //         totalBookings: {
+  //           $sum: {
+  //             $cond: [{ $ne: ["$orderStatus", "cancelled"] }, 1, 0],
+  //           },
+  //         },
+  //       },
+  //     },
+  //   ]);
+
+  //   return {
+  //     totalRevenue: result.length > 0 ? result[0].totalRevenue : 0,
+  //     totalBookings: result.length > 0 ? result[0].totalBookings : 0,
+  //   };
+  // }
+
+  async getBookingStatsBySalonId(salonId: string): Promise<any> {
+    try {
+      const today = new Date();
+      const formattedToday = `${today.getDate().toString().padStart(2, "0")}-${(
+        today.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")}-${today.getFullYear()}`;
+      console.log(`Formatted Date`, formattedToday);
+
+      const objectId = new mongoose.Types.ObjectId(salonId);
+
+      // Fetch all bookings for the salon
+      const totalBookings = await BookingModel.find({
+        salonId: objectId,
+        orderStatus: { $ne: "cancelled" },
+      });
+
+      // Fetch today's bookings for the salon
+      const todaysBookings = await BookingModel.find({
+        salonId: objectId,
+        date: formattedToday,
+        orderStatus: { $ne: "cancelled" },
+      });
+
+      // Calculate total revenue for completed bookings
+      const completedBookingsSum = await BookingModel.aggregate([
+        { $match: { salonId: objectId, orderStatus: "completed" } },
+        { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } },
+      ]);
+
+      const totalRevenue =
+        completedBookingsSum.length > 0
+          ? completedBookingsSum[0].totalAmount
+          : 0;
+
+      console.log(`TotalRevenue`, totalRevenue);
+
+      return { totalBookings, todaysBookings, totalRevenue };
+    } catch (error) {
+      console.error("Error fetching booking stats:", error);
+      throw error;
+    }
+  }
+
+  // async getBookingStatsBySalonId(salonId: string): Promise<any> {
+  //   try {
+  //     const today = new Date();
+  //     const formattedToday = `${today.getDate().toString().padStart(2, "0")}-${(
+  //       today.getMonth() + 1
+  //     )
+  //       .toString()
+  //       .padStart(2, "0")}-${today.getFullYear()}`;
+  //     console.log(`Formatted Date`, formattedToday);
+
+  //     const totalBookings = await BookingModel.countDocuments({
+  //       salonId: salonId,
+  //       orderStatus: { $ne: "cancelled" },
+  //     });
+
+  //     const todaysBookings = await BookingModel.countDocuments({
+  //       salonId: salonId,
+  //       date: formattedToday,
+  //       orderStatus: { $ne: "cancelled" },
+  //     });
+
+  //     const objectId = new mongoose.Types.ObjectId(salonId);
+
+  //     const completedBookingsSum = await BookingModel.aggregate([
+  //       { $match: { salonId: objectId, orderStatus: "completed" } },
+  //       { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } },
+  //     ]);
+
+  //     const totalRevenue =
+  //       completedBookingsSum.length > 0
+  //         ? completedBookingsSum[0].totalAmount
+  //         : 0;
+
+  //     console.log(`TotalRevenue`, totalRevenue);
+
+  //     return { totalBookings, todaysBookings, totalRevenue };
+  //   } catch (error) {
+  //     console.error("Error fetching booking stats:", error);
+  //     throw error;
+  //   }
+  // }
 }
 
 export default BookingRepository;

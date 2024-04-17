@@ -56,14 +56,19 @@ class BookingUsecase {
         const amount = booking.totalAmount * 100;
         const paymentId = booking.paymentId;
         const refund = await this.razorpay.refund(paymentId, amount);
+        const refundId = refund.data.id;
         console.log("Refund inside bookingUsecase", refund.data);
         if (refund.data.status == "processed") {
           const updateBooking =
-            await this.bookingInterface.findBookingByIdAndUpdate(bookingId);
+            await this.bookingInterface.findBookingByIdAndUpdate(
+              bookingId,
+              refundId
+            );
           return {
             status: 200,
             data: {
               bookingData: updateBooking,
+              refundData: refund.data,
             },
           };
         }
@@ -136,7 +141,7 @@ class BookingUsecase {
     const [day, month, year] = dateString.split("-").map(Number);
     const [hour, minute] = timeString.split(":").map(Number);
 
-    const notificationTime = new Date(year, month - 1, day, hour, minute - 7);
+    const notificationTime = new Date(year, month - 1, day, hour, minute - 30);
 
     const cronExpression = `${notificationTime.getMinutes()} ${notificationTime.getHours()} ${notificationTime.getDate()} ${
       notificationTime.getMonth() + 1
@@ -250,6 +255,22 @@ class BookingUsecase {
     return `${endHours.toString().padStart(2, "0")}:${endMinutes
       .toString()
       .padStart(2, "0")}`;
+  }
+
+  scheduleOrderCompletionCheck() {
+    cron.schedule("0 * * * *", async () => {
+      await this.checkAndCompleteOrders();
+    });
+  }
+
+  private async checkAndCompleteOrders() {
+    const currentTime = new Date();
+    const bookingsToComplete =
+      await this.bookingInterface.findBookingsToComplete(currentTime);
+
+    for (const booking of bookingsToComplete) {
+      await this.bookingInterface.updateBookingStatus(booking._id, "completed");
+    }
   }
 }
 

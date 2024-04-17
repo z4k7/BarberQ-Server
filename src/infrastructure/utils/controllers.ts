@@ -51,6 +51,7 @@ const adminUsecase = new AdminUsecase(
   userRepository,
   vendorRepository,
   salonRepository,
+  bookingRepository,
   encrypt,
   jwtToken
 );
@@ -63,7 +64,6 @@ const userUsecase = new UserUsecase(
 );
 const vendorUsecase = new VendorUsecase(
   vendorRepository,
-  serviceRepository,
   encrypt,
   genOtp,
   sendOtp,
@@ -72,7 +72,7 @@ const vendorUsecase = new VendorUsecase(
 const serviceUsecase = new ServiceUsecase(serviceRepository);
 const salonUsecase = new SalonUsecase(
   salonRepository,
-  serviceRepository,
+  bookingRepository,
   cloudinary
 );
 

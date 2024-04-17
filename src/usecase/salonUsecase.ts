@@ -1,13 +1,13 @@
 import SalonInterface from "./interface/salonInterface";
-import ServiceInterface from "./interface/serviceInterface";
 import ISalon from "../domain/salon";
 import Cloudinary from "../infrastructure/utils/cloudinary";
 import IService from "../domain/services";
+import BookingInterface from "./interface/bookingInterface";
 
 class SalonUsecase {
   constructor(
     private salonInterface: SalonInterface,
-    private serviceInterface: ServiceInterface,
+    private bookingInterface: BookingInterface,
     private cloudinary: Cloudinary
   ) {}
 
@@ -216,6 +216,55 @@ class SalonUsecase {
         data: {
           message: "Salon Updated Successfully",
           salonData: updatedSalon,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async getVendorDashboardData(vendorId: string) {
+    try {
+      const activeSalons = await this.salonInterface.findActiveSalonsByVendorId(
+        vendorId
+      );
+      const bookingData =
+        await this.bookingInterface.findVendorRevenueAndBookingsByVendorId(
+          vendorId
+        );
+
+      return {
+        status: 200,
+        data: {
+          salons: activeSalons,
+          bookings: bookingData.bookings,
+          revenue: bookingData.totalRevenue,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async getSalonDashboardData(salonId: string) {
+    try {
+      const bookingData = await this.bookingInterface.getBookingStatsBySalonId(
+        salonId
+      );
+      console.log(`Booking Data`, bookingData);
+
+      return {
+        status: 200,
+        data: {
+          totalBookings: bookingData.totalBookings,
+          todaysBookings: bookingData.todaysBookings,
+          revenue: bookingData.totalRevenue,
         },
       };
     } catch (error) {

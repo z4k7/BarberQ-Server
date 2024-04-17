@@ -5,6 +5,7 @@ import VendorInterface from "./interface/vendorInterface";
 import Encrypt from "../infrastructure/utils/hashPassword";
 import JwtToken from "../infrastructure/utils/jwtToken";
 import SalonInterface from "./interface/salonInterface";
+import BookingInterface from "./interface/bookingInterface";
 
 class AdminUsecase {
   constructor(
@@ -12,6 +13,7 @@ class AdminUsecase {
     private userInterface: UserInterface,
     private vendorInterface: VendorInterface,
     private salonInterface: SalonInterface,
+    private bookingInterface: BookingInterface,
     private Encrypt: Encrypt,
     private jwtToken: JwtToken
   ) {}
@@ -120,35 +122,6 @@ class AdminUsecase {
     }
   }
 
-  // async getSalons(
-  //   page: number,
-  //   limit: number,
-  //   searchQuery: string | undefined
-  // ) {
-  //   try {
-  //     if (isNaN(page)) page = 1;
-  //     if (isNaN(limit)) limit = 10;
-  //     if (!searchQuery) searchQuery = "";
-
-  //     const salonsList = await this.salonInterface.findAllSalonsWithCount(
-  //       page,
-  //       limit,
-  //       searchQuery
-  //     );
-  //     return {
-  //       status: 200,
-  //       data: {
-  //         adminData: salonsList,
-  //       },
-  //     };
-  //   } catch (error) {
-  //     return {
-  //       status: 400,
-  //       data: error,
-  //     };
-  //   }
-  // }
-
   async blockUnblockUser(userId: string) {
     try {
       console.log(`inside Usecase`);
@@ -174,6 +147,28 @@ class AdminUsecase {
         status: 200,
         data: {
           adminData: vendor,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async getDashboardData() {
+    try {
+      const vendorCount = await this.vendorInterface.findActiveVendorsCount();
+      const activeSalonCount = await this.salonInterface.findActiveSalonCount();
+      const totalRevenue = await this.bookingInterface.findTotalRevenue();
+
+      return {
+        status: 200,
+        data: {
+          vendors: vendorCount,
+          salons: activeSalonCount,
+          revenue: totalRevenue,
         },
       };
     } catch (error) {

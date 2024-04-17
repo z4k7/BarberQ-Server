@@ -64,4 +64,10 @@ route.post("/addMessage", adminAuth, (req, res) =>
   chatController.addMessage(req, res)
 );
 
+// * Dashboard Routes
+
+route.get("/dashboard", adminAuth, (req, res) =>
+  adminController.getAdminData(req, res)
+);
+
 export default route;

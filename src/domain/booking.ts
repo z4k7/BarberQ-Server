@@ -14,6 +14,7 @@ interface IBooking {
   services?: Array<any>;
   orderStatus?: string;
   paymentId?: string;
+  refundId?: string;
   choosedServices?: Array<string>;
   appliedCoupon?: {
     couponName?: string;

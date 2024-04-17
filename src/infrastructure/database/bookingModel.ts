@@ -19,6 +19,7 @@ export interface IBooking extends Document {
   totalDuration: number;
   orderStatus: string;
   paymentId: string;
+  refundId: string;
   choosedServices: Array<string>;
 }
 
@@ -76,6 +77,9 @@ const bookingSchema: Schema = new Schema({
     type: Object,
   },
   paymentId: {
+    type: String,
+  },
+  refundId: {
     type: String,
   },
 });
