@@ -21,8 +21,14 @@ interface SalonInterface {
   deleteSalonServices(salonId: string, serviceIds: string[]): Promise<any>;
   updateSalon(salonId: string, update: any): Promise<any>;
   updateSalonStatus(salonId: string, status: string): Promise<any>;
+  upgradeToPremium(salonId: string): Promise<any>;
   findActiveSalonCount(): Promise<number>;
   findActiveSalonsByVendorId(vendorId: string): Promise<number>;
+  findNearbySalons(
+    latitude: number,
+    longitude: number,
+    radius: number
+  ): Promise<any>;
 }
 
 export default SalonInterface;

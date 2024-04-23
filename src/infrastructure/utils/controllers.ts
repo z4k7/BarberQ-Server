@@ -6,6 +6,7 @@ import SalonRepository from "../repository/salonRepository";
 import BookingRepository from "../repository/bookingRepository";
 import ConversationRepository from "../repository/conversationRepository";
 import MessageRepository from "../repository/messageRepository";
+import ReviewRepository from "../repository/reviewRepository";
 
 import Encrypt from "./hashPassword";
 import GenerateOtp from "./generateOtp";
@@ -21,6 +22,7 @@ import ServiceUsecase from "../../usecase/serviceUsecase";
 import SalonUsecase from "../../usecase/salonUsecase";
 import BookingUsecase from "../../usecase/bookingUsecase";
 import ChatUsecase from "../../usecase/chatUsecase";
+import ReviewUsecase from "../../usecase/reviewUsecase";
 
 import AdminController from "../../adapter/adminController";
 import VendorController from "../../adapter/vendorController";
@@ -29,6 +31,7 @@ import ServiceController from "../../adapter/serviceController";
 import SalonController from "../../adapter/salonController";
 import BookingController from "../../adapter/bookingController";
 import ChatController from "../../adapter/chatController";
+import ReviewController from "../../adapter/reviewController";
 
 const adminRepository = new AdminRepository();
 const vendorRepository = new VendorRepository();
@@ -38,6 +41,7 @@ const salonRepository = new SalonRepository();
 const bookingRepository = new BookingRepository();
 const messageRepository = new MessageRepository();
 const conversationRepository = new ConversationRepository();
+const reviewRepository = new ReviewRepository();
 
 const encrypt = new Encrypt();
 const genOtp = new GenerateOtp();
@@ -85,6 +89,8 @@ const bookingUsecase = new BookingUsecase(
 
 const chatUsecase = new ChatUsecase(conversationRepository, messageRepository);
 
+const reviewUsecase = new ReviewUsecase(reviewRepository);
+
 export const adminController = new AdminController(adminUsecase);
 export const vendorController = new VendorController(vendorUsecase);
 export const userController = new UserController(userUsecase, chatUsecase);
@@ -95,3 +101,4 @@ export const salonController = new SalonController(
 );
 export const bookingController = new BookingController(bookingUsecase);
 export const chatController = new ChatController(chatUsecase);
+export const reviewController = new ReviewController(reviewUsecase);

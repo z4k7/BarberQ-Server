@@ -2,6 +2,7 @@ import { userAuth } from "../middlewares/userAuth";
 import {
   bookingController,
   chatController,
+  reviewController,
   salonController,
   userController,
 } from "../utils/controllers";
@@ -18,6 +19,10 @@ route.get("/resend-otp", (req, res) => userController.resendOtp(req, res));
 
 route.post("/login", (req, res) => userController.userLogin(req, res));
 
+// *Salon Routes
+route.get("/salons/nearby", (req, res) =>
+  salonController.getNearbySalons(req, res)
+);
 route.get("/salon", (req, res) => salonController.getActiveSalons(req, res));
 route.get("/salon/:salonId", (req, res) =>
   salonController.getSalonDetaills(req, res)
@@ -62,5 +67,19 @@ route.post("/addMessage", (req, res) => chatController.addMessage(req, res));
 route.get("/getMessages/:conversationId", (req, res) =>
   chatController.getMessages(req, res)
 );
+
+// * Review Routes
+route.post("/reviews", (req, res) => reviewController.addReview(req, res));
+route.get("/reviews", (req, res) => reviewController.getReviews(req, res));
+route.get("/reviews/average", (req, res) =>
+  reviewController.getAverage(req, res)
+);
+route.post("/reviews/user-in-booking", (req, res) =>
+  reviewController.userInBooking(req, res)
+);
+route.post("/reviews/find-review", (req, res) =>
+  reviewController.findReview(req, res)
+);
+route.put("/reviews", (req, res) => reviewController.editReview(req, res));
 
 export default route;

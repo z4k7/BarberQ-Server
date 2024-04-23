@@ -13,6 +13,7 @@ interface ISalon {
   chairCount: string;
   location: object;
   status?: string;
+  isPremium?: number;
   banners: Array<Object> | any;
   facilities: Array<string>;
   services: Array<any>;

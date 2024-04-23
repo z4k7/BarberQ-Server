@@ -29,6 +29,11 @@ class SalonUsecase {
 
       console.log(`uploadedBanners`, uploadedBanners);
 
+      // salonData.location = {
+      //   type: 'Point',
+      //   coordinates: [salonData.location.longitude, salonData.location.latitude],
+      // };
+
       const salonStatus = await this.salonInterface.addSalon(salonData);
 
       return {
@@ -101,6 +106,25 @@ class SalonUsecase {
       return {
         status: 200,
         data: { salonData: salonDetails },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
+  async upgradeToPremium(salonId: string): Promise<any> {
+    try {
+      const updatedSalon = await this.salonInterface.upgradeToPremium(salonId);
+
+      return {
+        status: 200,
+        data: {
+          message: "Upgraded to premium successfully",
+          salonData: updatedSalon,
+        },
       };
     } catch (error) {
       return {
@@ -272,6 +296,20 @@ class SalonUsecase {
         status: 400,
         data: error,
       };
+    }
+  }
+
+  async getNearbySalons(latitude: number, longitude: number, radius: number) {
+    try {
+      const nearbySalons = await this.salonInterface.findNearbySalons(
+        latitude,
+        longitude,
+        radius
+      );
+
+      return { status: 200, data: nearbySalons };
+    } catch (error) {
+      return { status: 400, data: (error as Error).message };
     }
   }
 

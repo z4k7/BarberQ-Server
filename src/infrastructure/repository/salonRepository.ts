@@ -112,7 +112,6 @@ class SalonRepository implements SalonInterface {
   ): Promise<any> {
     try {
       const regex = new RegExp(searchQuery, "i");
-
       const matchStage: any = {
         $or: [
           { salonName: { $regex: regex } },
@@ -140,37 +139,115 @@ class SalonRepository implements SalonInterface {
         },
       };
 
+      const paginationStage = [
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        { $project: { password: 0 } },
+      ];
+
       const pipeline = [
         lookupStage,
         unblockedVendorMatchStage,
         { $match: matchStage },
+
         {
           $facet: {
             totalCount: [{ $count: "count" }],
-            paginatedResults: [
-              { $skip: (page - 1) * limit },
-              { $limit: limit },
-              { $project: { password: 0 } },
-            ],
+            paginatedResults: paginationStage,
           },
         },
       ];
 
-      const [result] = await SalonModel.aggregate(pipeline).exec();
-
+      const [result] = await SalonModel.aggregate(pipeline)
+        .sort({ isPremium: -1 })
+        .exec();
       const salons = result.paginatedResults;
       const salonCount =
         result.totalCount.length > 0 ? result.totalCount[0].count : 0;
 
-      return {
-        salons,
-        salonCount,
-      };
+      return { salons, salonCount };
     } catch (error) {
       console.log(error);
       throw new Error("Error while getting salon data");
     }
   }
+
+  // async findAllSalonsWithCount(
+  //   page: number,
+  //   limit: number,
+  //   vendorId: string,
+  //   searchQuery: string
+  // ): Promise<any> {
+  //   try {
+  //     const regex = new RegExp(searchQuery, "i");
+
+  //     const matchStage: any = {
+  //       $or: [
+  //         { salonName: { $regex: regex } },
+  //         { locality: { $regex: regex } },
+  //         { district: { $regex: regex } },
+  //       ],
+  //     };
+
+  //     if (vendorId !== "") {
+  //       matchStage["vendorId"] = new mongoose.Types.ObjectId(vendorId);
+  //     }
+
+  //     const lookupStage = {
+  //       $lookup: {
+  //         from: "vendors",
+  //         localField: "vendorId",
+  //         foreignField: "_id",
+  //         as: "vendor",
+  //       },
+  //     };
+
+  //     const unblockedVendorMatchStage = {
+  //       $match: {
+  //         "vendor.isBlocked": { $ne: true },
+  //       },
+  //     };
+
+  //     const sortStage = {
+  //       $sort: {
+  //         isPremium: -1, // Sort by isPremium in descending order
+  //       },
+  //     };
+
+  //     const paginationStage = [
+  //       { $skip: (page - 1) * limit },
+  //       { $limit: limit },
+  //       { $project: { password: 0 } },
+  //     ];
+
+  //     const pipeline = [
+  //       lookupStage,
+  //       unblockedVendorMatchStage,
+  //       { $match: matchStage },
+  //       sortStage,
+  //       {
+  //         $facet: {
+  //           totalCount: [{ $count: "count" }],
+  //           paginatedResults: paginationStage,
+  //         },
+  //       },
+  //     ];
+
+  //     const [result] = await SalonModel.aggregate(pipeline).exec();
+
+  //     const salons = result.paginatedResults;
+  //     const salonCount =
+  //       result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+
+  //     return {
+  //       salons,
+  //       salonCount,
+  //     };
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new Error("Error while getting salon data");
+  //   }
+  // }
 
   async updateSalonServices(
     salonId: string,
@@ -310,6 +387,24 @@ class SalonRepository implements SalonInterface {
       throw error;
     }
   }
+  async upgradeToPremium(salonId: string): Promise<any> {
+    try {
+      const salon = await SalonModel.findById(salonId);
+      if (!salon) {
+        throw new Error("Salon not found");
+      }
+      salon.isPremium = 1;
+
+      const updatedSalon = await salon.save();
+
+      return updatedSalon;
+    } catch (error) {
+      if (error instanceof mongoose.Error.CastError) {
+        throw new Error("Invalid salon ID");
+      }
+      throw error;
+    }
+  }
 
   async findActiveSalonsByVendorId(vendorId: string): Promise<number> {
     try {
@@ -324,6 +419,27 @@ class SalonRepository implements SalonInterface {
         throw new Error("Invalid salon ID");
       }
       throw error;
+    }
+  }
+
+  async findNearbySalons(
+    latitude: number,
+    longitude: number,
+    radius: number
+  ): Promise<any> {
+    try {
+      const nearbySalons = await SalonModel.find({
+        location: {
+          $geoWithin: {
+            $centerSphere: [[longitude, latitude], radius / 6378.1],
+          },
+        },
+      });
+      console.log(`Nearby Salons`, nearbySalons);
+
+      return nearbySalons;
+    } catch (error) {
+      return { status: 400, data: (error as Error).message };
     }
   }
 }
