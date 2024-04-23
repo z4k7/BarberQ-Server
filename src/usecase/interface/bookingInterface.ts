@@ -33,6 +33,7 @@ interface BookingInterface {
   findCompletedBookingsCount(): Promise<number>;
   findTotalRevenue(): Promise<number>;
   findTotalRevenueBySalonId(salonId: string): Promise<number>;
+  findAllBookings(): Promise<any>;
   findVendorRevenueAndBookingsByVendorId(
     vendorId: string
   ): Promise<{ totalRevenue: number; bookings: any[] }>;

@@ -14,6 +14,7 @@ export interface ISalon extends Document {
   googleMapLocation: string;
   chairCount: string;
   status: string;
+  isPremium: number;
   banners: Array<string>;
   facilities: Array<string>;
   services: Array<any>;
@@ -38,13 +39,10 @@ const SalonSchema: Schema = new Schema(
       type: String,
     },
     location: {
-      longitude: {
-        type: Number,
-      },
-      latitude: {
-        type: Number,
-      },
+      type: { type: String, default: "Point", required: true },
+      coordinates: { type: [Number], required: true },
     },
+
     openingTime: {
       type: String,
     },
@@ -57,6 +55,10 @@ const SalonSchema: Schema = new Schema(
     status: {
       type: String,
       default: "pending",
+    },
+    isPremium: {
+      type: Number,
+      default: 0,
     },
     chairCount: {
       type: String,
@@ -76,6 +78,8 @@ const SalonSchema: Schema = new Schema(
     timestamps: true,
   }
 );
+
+SalonSchema.index({ location: "2dsphere" });
 
 const SalonModel = mongoose.model<ISalon>("Salon", SalonSchema);
 export default SalonModel;

@@ -25,6 +25,8 @@ class SalonController {
         const banners = req.files;
         const facilities = JSON.parse(req.body.facilities);
         const location = JSON.parse(req.body.location);
+        console.log(`Location in body`, req.body.location);
+        console.log(`Location`, location);
 
         const {
           salonName,
@@ -43,7 +45,8 @@ class SalonController {
           salonName,
           landmark,
           locality,
-          location,
+          longitude: location.longitude,
+          latitude: location.latitude,
           district,
           openingTime,
           closingTime,
@@ -52,13 +55,38 @@ class SalonController {
           facilities,
           banners,
           services,
+          location,
         };
 
+        salonData.location = {
+          type: "Point",
+          coordinates: [salonData.longitude, salonData.latitude],
+        };
+
+        console.log(`Salon Data`, salonData);
         const salonAdd = await this.salonUsecase.addSalon(salonData);
         res.status(200).json(salonAdd);
       }
     } catch (error) {
       console.log(`Error`, error);
+    }
+  }
+
+  async upgradeToPremium(req: Request, res: Response) {
+    try {
+      const salonId = req.params.salonId as string;
+      
+
+      const salonDetails = await this.salonUsecase.upgradeToPremium(
+        salonId);
+
+      return res.status(salonDetails.status).json(salonDetails);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
     }
   }
 
@@ -179,6 +207,35 @@ class SalonController {
     }
   }
 
+  async getNearbySalons(req: Request, res: Response) {
+    try {
+      console.log(`Inside Nearby controller`);
+      const { longitude, latitude, radius } = req.query;
+      if (!longitude || !latitude || !radius) {
+        return res.status(400).json({
+          status: 400,
+          success: false,
+          message: "Missing required parameters",
+        });
+      }
+
+      const nearbySalons = await this.salonUsecase.getNearbySalons(
+        parseFloat(latitude as string),
+        parseFloat(longitude as string),
+        parseFloat(radius as string)
+      );
+
+      res.status(nearbySalons.status).json(nearbySalons);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
   async getActiveSalons(req: Request, res: Response) {
     try {
       const page = parseInt(req.query.page as string);
@@ -262,7 +319,12 @@ class SalonController {
 
     try {
       const order = await this.razorpay.createOrder(amount);
-      res.status(200).json({ order });
+      const premium = "premium";
+      if (amount == 2999) {
+        res.status(200).json({ order, premium });
+      } else {
+        res.status(200).json({ order });
+      }
     } catch (error) {
       console.error("Error creating payment order", error);
       res.status(500).json({ message: "Failed to create payment order" });

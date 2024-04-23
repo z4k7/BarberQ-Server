@@ -56,6 +56,9 @@ route.delete("/salons/:salonId/services", vendorAuth, (req, res) =>
 route.patch("/salons/:salonId/status", vendorAuth, (req, res) =>
   salonController.updateSalonStatus(req, res)
 );
+route.patch("/salons/:salonId/premium", vendorAuth, (req, res) =>
+  salonController.upgradeToPremium(req, res)
+);
 
 // * Razorpay Routes
 
@@ -72,6 +75,8 @@ route.get("/dashboard/:vendorId", vendorAuth, (req, res) =>
   salonController.getVendorDashboardData(req, res)
 );
 
-route.get("/dashboard/salon/:salonId",vendorAuth,(req,res)=>salonController.getSalonDashboardData(req,res));
+route.get("/dashboard/salon/:salonId", vendorAuth, (req, res) =>
+  salonController.getSalonDashboardData(req, res)
+);
 
 export default route;

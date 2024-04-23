@@ -241,6 +241,12 @@ class BookingRepository implements BookingInterface {
     });
     return completedBookingsCount;
   }
+  async findAllBookings(): Promise<any> {
+    const totalBookings = await BookingModel.find({
+      orderStatus: { $ne: "cancelled" },
+    });
+    return totalBookings;
+  }
 
   async findTotalRevenue(): Promise<number> {
     const totalRevenue = await BookingModel.aggregate([
@@ -300,48 +306,6 @@ class BookingRepository implements BookingInterface {
     };
   }
 
-  // async findVendorRevenueAndBookingsByVendorId(
-  //   vendorId: string
-  // ): Promise<{ totalRevenue: number; totalBookings: number }> {
-  //   const ObjectId = new mongoose.Types.ObjectId(vendorId);
-  //   const activeSalons = await SalonModel.find(
-  //     {
-  //       vendorId: ObjectId,
-  //       status: "active",
-  //     },
-  //     "_id"
-  //   );
-  //   const salonIds = activeSalons.map((salon) => salon._id);
-
-  //   const result = await BookingModel.aggregate([
-  //     { $match: { salonId: { $in: salonIds } } },
-  //     {
-  //       $group: {
-  //         _id: null,
-  //         totalRevenue: {
-  //           $sum: {
-  //             $cond: [
-  //               { $eq: ["$orderStatus", "completed"] },
-  //               "$totalAmount",
-  //               0,
-  //             ],
-  //           },
-  //         },
-  //         totalBookings: {
-  //           $sum: {
-  //             $cond: [{ $ne: ["$orderStatus", "cancelled"] }, 1, 0],
-  //           },
-  //         },
-  //       },
-  //     },
-  //   ]);
-
-  //   return {
-  //     totalRevenue: result.length > 0 ? result[0].totalRevenue : 0,
-  //     totalBookings: result.length > 0 ? result[0].totalBookings : 0,
-  //   };
-  // }
-
   async getBookingStatsBySalonId(salonId: string): Promise<any> {
     try {
       const today = new Date();
@@ -354,20 +318,17 @@ class BookingRepository implements BookingInterface {
 
       const objectId = new mongoose.Types.ObjectId(salonId);
 
-      // Fetch all bookings for the salon
       const totalBookings = await BookingModel.find({
         salonId: objectId,
         orderStatus: { $ne: "cancelled" },
       });
 
-      // Fetch today's bookings for the salon
       const todaysBookings = await BookingModel.find({
         salonId: objectId,
         date: formattedToday,
         orderStatus: { $ne: "cancelled" },
       });
 
-      // Calculate total revenue for completed bookings
       const completedBookingsSum = await BookingModel.aggregate([
         { $match: { salonId: objectId, orderStatus: "completed" } },
         { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } },
@@ -386,48 +347,6 @@ class BookingRepository implements BookingInterface {
       throw error;
     }
   }
-
-  // async getBookingStatsBySalonId(salonId: string): Promise<any> {
-  //   try {
-  //     const today = new Date();
-  //     const formattedToday = `${today.getDate().toString().padStart(2, "0")}-${(
-  //       today.getMonth() + 1
-  //     )
-  //       .toString()
-  //       .padStart(2, "0")}-${today.getFullYear()}`;
-  //     console.log(`Formatted Date`, formattedToday);
-
-  //     const totalBookings = await BookingModel.countDocuments({
-  //       salonId: salonId,
-  //       orderStatus: { $ne: "cancelled" },
-  //     });
-
-  //     const todaysBookings = await BookingModel.countDocuments({
-  //       salonId: salonId,
-  //       date: formattedToday,
-  //       orderStatus: { $ne: "cancelled" },
-  //     });
-
-  //     const objectId = new mongoose.Types.ObjectId(salonId);
-
-  //     const completedBookingsSum = await BookingModel.aggregate([
-  //       { $match: { salonId: objectId, orderStatus: "completed" } },
-  //       { $group: { _id: null, totalAmount: { $sum: "$totalAmount" } } },
-  //     ]);
-
-  //     const totalRevenue =
-  //       completedBookingsSum.length > 0
-  //         ? completedBookingsSum[0].totalAmount
-  //         : 0;
-
-  //     console.log(`TotalRevenue`, totalRevenue);
-
-  //     return { totalBookings, todaysBookings, totalRevenue };
-  //   } catch (error) {
-  //     console.error("Error fetching booking stats:", error);
-  //     throw error;
-  //   }
-  // }
 }
 
 export default BookingRepository;

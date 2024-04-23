@@ -162,6 +162,7 @@ class AdminUsecase {
       const vendorCount = await this.vendorInterface.findActiveVendorsCount();
       const activeSalonCount = await this.salonInterface.findActiveSalonCount();
       const totalRevenue = await this.bookingInterface.findTotalRevenue();
+      const totalBookings = await this.bookingInterface.findAllBookings();
 
       return {
         status: 200,
@@ -169,6 +170,7 @@ class AdminUsecase {
           vendors: vendorCount,
           salons: activeSalonCount,
           revenue: totalRevenue,
+          bookings: totalBookings,
         },
       };
     } catch (error) {
