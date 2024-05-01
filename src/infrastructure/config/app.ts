@@ -38,8 +38,13 @@ const httpServer = http.createServer(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// app.use(cors({ origin: "http://localhost:4200", credentials: true }));
-app.use(cors({ origin: "https://barberq.vercel.app", credentials: true }));
+// app.use(cors({ origin: "https://barberq.vercel.app", credentials: true }));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:4200",
+    credentials: true,
+  })
+);
 
 app.use("/api/user", userRoute);
 app.use("/api/vendor", vendorRoute);
@@ -55,7 +60,7 @@ interface IUser {
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: process.env.FRONTEND_URL || "http://localhost:4200",
     methods: ["GET", "POST"],
   },
 });

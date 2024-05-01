@@ -30,7 +30,7 @@ class VendorController {
         console.log(`Otp Expired`);
       }, 1000 * 30);
 
-      return res.status(201).json({ response: verificationResponse });
+      return res.status(201).json({ data: { message: "OTP Sent " } });
     } catch (error) {
       console.log(`Error in signup:`, error);
       return res.status(500).json({
