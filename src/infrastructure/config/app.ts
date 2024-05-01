@@ -41,7 +41,7 @@ app.use(express.urlencoded({ extended: true }));
 // app.use(cors({ origin: "https://barberq.vercel.app", credentials: true }));
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:4200",
+    origin: "http://localhost:4200",
     credentials: true,
   })
 );
@@ -60,7 +60,7 @@ interface IUser {
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:4200",
+    origin: "http://localhost:4200",
     methods: ["GET", "POST"],
   },
 });
