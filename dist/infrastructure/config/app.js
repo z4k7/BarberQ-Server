@@ -42,15 +42,18 @@ const httpServer = http_1.default.createServer(app);
 exports.httpServer = httpServer;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-// app.use(cors({ origin: "http://localhost:4200", credentials: true }));
-app.use((0, cors_1.default)({ origin: "https://barberq.vercel.app", credentials: true }));
+// app.use(cors({ origin: "https://barberq.vercel.app", credentials: true }));
+app.use((0, cors_1.default)({
+    origin: process.env.FRONTEND_URL || "http://localhost:4200",
+    credentials: true,
+}));
 app.use("/api/user", userRoute_1.default);
 app.use("/api/vendor", vendorRoute_1.default);
 app.use("/api/admin", adminRoute_1.default);
 app.use("/api/token", tokenRoute_1.default);
 exports.io = new socket_io_1.Server(httpServer, {
     cors: {
-        origin: "http://localhost:4200",
+        origin: process.env.FRONTEND_URL || "http://localhost:4200",
         methods: ["GET", "POST"],
     },
 });

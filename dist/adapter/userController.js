@@ -27,7 +27,7 @@ class UserController {
                 const verificationResponse = yield this.userUsecase.verifyMail(newUser.email);
                 req.app.locals.user = newUser;
                 req.app.locals.otp = verificationResponse.otp;
-                return res.status(201).json({ response: verificationResponse });
+                return res.status(201).json({ data: { message: "OTP Sent" } });
             }
             catch (error) {
                 console.error("Error in signUp:", error);
