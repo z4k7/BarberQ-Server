@@ -40,6 +40,8 @@ class BookingRepository implements BookingInterface {
         ? this.getCurrentTime()
         : this.toTimeString(openingTime);
 
+    console.log(`start Time`, startTime);
+
     let currentTime = startTime;
     while (currentTime < closingTime) {
       const endTime = this.calculateEndTime(currentTime, duration);
@@ -74,12 +76,26 @@ class BookingRepository implements BookingInterface {
   }
 
   private getCurrentTime(): string {
-    const currentTimeString = new Date().toLocaleTimeString(undefined, {
+    const currentTime = new Date();
+
+    const offsetInMilliseconds = 5 * 60 * 60 * 1000 + 30 * 60 * 1000;
+
+    const adjustedTime = new Date(currentTime.getTime() + offsetInMilliseconds);
+
+    const adjustedTimeString = adjustedTime.toLocaleTimeString(undefined, {
       hour12: false,
       hour: "2-digit",
       minute: "2-digit",
     });
-    return currentTimeString;
+
+    return adjustedTimeString;
+
+    // const currentTimeString = new Date().toLocaleTimeString(undefined, {
+    //   hour12: false,
+    //   hour: "2-digit",
+    //   minute: "2-digit",
+    // });
+    // return currentTimeString;
   }
 
   private toTimeString(time: string): string {
