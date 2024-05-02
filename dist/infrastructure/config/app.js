@@ -42,7 +42,6 @@ const httpServer = http_1.default.createServer(app);
 exports.httpServer = httpServer;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-// app.use(cors({ origin: "https://barberq.vercel.app", credentials: true }));
 app.use((0, cors_1.default)({
     origin: "http://localhost:4200",
     credentials: true,
