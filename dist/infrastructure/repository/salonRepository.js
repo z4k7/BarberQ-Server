@@ -81,7 +81,9 @@ class SalonRepository {
                         "vendor.isBlocked": { $ne: true },
                     },
                 };
+                const sortStage = { $sort: { isPremium: -1 } };
                 const pipeline = [
+                    sortStage,
                     lookupStage,
                     unblockedVendorMatchStage,
                     { $match: matchStage },
@@ -96,9 +98,9 @@ class SalonRepository {
                         },
                     },
                 ];
-                const [result] = yield salonModel_1.default.aggregate(pipeline).exec();
-                const salons = result.paginatedResults;
-                const salonCount = result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+                const result = yield salonModel_1.default.aggregate(pipeline).exec();
+                const salons = result[0].paginatedResults;
+                const salonCount = result[0].totalCount.length > 0 ? result[0].totalCount[0].count : 0;
                 return {
                     salons,
                     salonCount,
