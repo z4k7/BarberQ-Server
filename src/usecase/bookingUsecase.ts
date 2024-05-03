@@ -49,6 +49,41 @@ class BookingUsecase {
     }
   }
 
+  async getSalonBookings(
+    page: number,
+    limit: number,
+    salonId: string | undefined,
+    searchQuery: string | undefined
+  ) {
+    console.log(`Inside get salon bookings usecase`);
+    try {
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 10;
+      if (!salonId) salonId = "";
+      if (!searchQuery) searchQuery = "";
+
+      const bookingList =
+        await this.bookingInterface.findSalonBookingsWithCount(
+          page,
+          limit,
+          salonId,
+          searchQuery
+        );
+
+      return {
+        status: 200,
+        data: {
+          bookingData: bookingList,
+        },
+      };
+    } catch (error) {
+      return {
+        status: 400,
+        data: error,
+      };
+    }
+  }
+
   async cancelBooking(bookingId: string): Promise<any> {
     try {
       const booking = await this.bookingInterface.findBookingById(bookingId);

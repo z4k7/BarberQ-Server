@@ -39,6 +39,7 @@ class BookingController {
   }
 
   async getBookings(req: Request, res: Response) {
+    console.log(`Inside Get Bookings`);
     try {
       const page = parseInt(req.query.page as string);
       const limit = parseInt(req.query.limit as string);
@@ -49,6 +50,32 @@ class BookingController {
         page,
         limit,
         userId,
+        searchQuery
+      );
+      return res.status(bookingList.status).json(bookingList);
+    } catch (error) {
+      return res.status(500).json({
+        status: 500,
+        success: false,
+        message: "Internal Server Error",
+        error: (error as Error).message,
+      });
+    }
+  }
+
+  async getSalonBookings(req: Request, res: Response) {
+    console.log(`Inside get salon bookings controller`);
+
+    try {
+      const page = parseInt(req.query.page as string);
+      const limit = parseInt(req.query.limit as string);
+      const salonId = req.query.salonId as string | undefined;
+      const searchQuery = req.query.searchQuery as string | undefined;
+
+      const bookingList = await this.bookingUsecase.getSalonBookings(
+        page,
+        limit,
+        salonId,
         searchQuery
       );
       return res.status(bookingList.status).json(bookingList);

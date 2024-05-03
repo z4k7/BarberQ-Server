@@ -3,7 +3,7 @@ import BookingInterface from "../../usecase/interface/bookingInterface";
 import IBooking from "../../domain/booking";
 import SalonModel from "../database/salonModel";
 import mongoose from "mongoose";
-
+import { PipelineStage } from "mongoose";
 class BookingRepository implements BookingInterface {
   async createBooking(booking: IBooking): Promise<IBooking> {
     const newBooking = new BookingModel(booking);
@@ -89,13 +89,6 @@ class BookingRepository implements BookingInterface {
     });
 
     return adjustedTimeString;
-
-    // const currentTimeString = new Date().toLocaleTimeString(undefined, {
-    //   hour12: false,
-    //   hour: "2-digit",
-    //   minute: "2-digit",
-    // });
-    // return currentTimeString;
   }
 
   private toTimeString(time: string): string {
@@ -168,6 +161,59 @@ class BookingRepository implements BookingInterface {
     return booking;
   }
 
+  async findSalonBookingsWithCount(
+    page: number,
+    limit: number,
+    salonId: string,
+    searchQuery: string
+  ): Promise<any> {
+    console.log(`Inside get salon bookings repository`);
+    try {
+      const regex = new RegExp(searchQuery, "i");
+
+      const matchStage: any = {
+        $or: [
+          { salonName: { $regex: regex } },
+          { orderStatus: { $regex: regex } },
+          { date: { $regex: regex } },
+        ],
+      };
+
+      if (salonId !== "") {
+        (matchStage as any)["salonId"] = new mongoose.Types.ObjectId(salonId);
+      }
+
+      const pipeline: PipelineStage[] = [
+        { $match: matchStage },
+        { $sort: { createdAt: -1 } },
+        {
+          $facet: {
+            totalCount: [{ $count: "count" }],
+            paginatedResults: [
+              { $skip: (page - 1) * limit },
+              { $limit: limit },
+              { $project: { password: 0 } },
+            ],
+          },
+        },
+      ];
+
+      const [result] = await BookingModel.aggregate(pipeline).exec();
+
+      const bookings = result.paginatedResults;
+      const bookingsCount =
+        result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+
+      return {
+        bookings,
+        bookingsCount,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error("Error while getting salon data");
+    }
+  }
+
   async findAllBookingsWithCount(
     page: number,
     limit: number,
@@ -186,11 +232,12 @@ class BookingRepository implements BookingInterface {
       };
 
       if (userId !== "") {
-        matchStage["userId"] = new mongoose.Types.ObjectId(userId);
+        (matchStage as any)["userId"] = new mongoose.Types.ObjectId(userId);
       }
 
-      const pipeline = [
+      const pipeline: PipelineStage[] = [
         { $match: matchStage },
+        { $sort: { createdAt: -1 } },
         {
           $facet: {
             totalCount: [{ $count: "count" }],

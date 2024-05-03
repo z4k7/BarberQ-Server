@@ -49,6 +49,34 @@ class BookingUsecase {
             }
         });
     }
+    getSalonBookings(page, limit, salonId, searchQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(`Inside get salon bookings usecase`);
+            try {
+                if (isNaN(page))
+                    page = 1;
+                if (isNaN(limit))
+                    limit = 10;
+                if (!salonId)
+                    salonId = "";
+                if (!searchQuery)
+                    searchQuery = "";
+                const bookingList = yield this.bookingInterface.findSalonBookingsWithCount(page, limit, salonId, searchQuery);
+                return {
+                    status: 200,
+                    data: {
+                        bookingData: bookingList,
+                    },
+                };
+            }
+            catch (error) {
+                return {
+                    status: 400,
+                    data: error,
+                };
+            }
+        });
+    }
     cancelBooking(bookingId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

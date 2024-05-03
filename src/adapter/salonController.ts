@@ -75,10 +75,8 @@ class SalonController {
   async upgradeToPremium(req: Request, res: Response) {
     try {
       const salonId = req.params.salonId as string;
-      
 
-      const salonDetails = await this.salonUsecase.upgradeToPremium(
-        salonId);
+      const salonDetails = await this.salonUsecase.upgradeToPremium(salonId);
 
       return res.status(salonDetails.status).json(salonDetails);
     } catch (error) {
@@ -184,6 +182,7 @@ class SalonController {
   }
 
   async getSalons(req: Request, res: Response) {
+    console.log(`Inside getsalons controller`);
     try {
       const page = parseInt(req.query.page as string);
       const limit = parseInt(req.query.limit as string);

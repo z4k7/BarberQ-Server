@@ -167,6 +167,7 @@ class SalonController {
     }
     getSalons(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(`Inside getsalons controller`);
             try {
                 const page = parseInt(req.query.page);
                 const limit = parseInt(req.query.limit);

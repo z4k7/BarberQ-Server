@@ -2,6 +2,7 @@ import {
   vendorController,
   salonController,
   serviceController,
+  bookingController,
 } from "../utils/controllers";
 import { vendorAuth } from "../middlewares/vendorAuth";
 import { multerMiddleware } from "../middlewares/multerMiddleware";
@@ -28,6 +29,10 @@ route.post(
 
 route.get("/services", vendorAuth, (req, res) =>
   serviceController.getAllServices(req, res)
+);
+
+route.get("/salons/bookings", (req, res) =>
+  bookingController.getSalonBookings(req, res)
 );
 route.get("/salons/:vendorId", vendorAuth, (req, res) =>
   salonController.getSalons(req, res)
@@ -78,5 +83,7 @@ route.get("/dashboard/:vendorId", vendorAuth, (req, res) =>
 route.get("/dashboard/salon/:salonId", vendorAuth, (req, res) =>
   salonController.getSalonDashboardData(req, res)
 );
+
+// * Booking Routes
 
 export default route;
