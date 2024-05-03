@@ -83,6 +83,6 @@ const bookingSchema = new mongoose_1.Schema({
     refundId: {
         type: String,
     },
-});
+}, { timestamps: true });
 const BookingModel = mongoose_1.default.model("Booking", bookingSchema);
 exports.default = BookingModel;

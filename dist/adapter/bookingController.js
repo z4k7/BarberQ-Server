@@ -39,12 +39,34 @@ class BookingController {
     }
     getBookings(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log(`Inside Get Bookings`);
             try {
                 const page = parseInt(req.query.page);
                 const limit = parseInt(req.query.limit);
                 const userId = req.query.userId;
                 const searchQuery = req.query.searchQuery;
                 const bookingList = yield this.bookingUsecase.getBookings(page, limit, userId, searchQuery);
+                return res.status(bookingList.status).json(bookingList);
+            }
+            catch (error) {
+                return res.status(500).json({
+                    status: 500,
+                    success: false,
+                    message: "Internal Server Error",
+                    error: error.message,
+                });
+            }
+        });
+    }
+    getSalonBookings(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(`Inside get salon bookings controller`);
+            try {
+                const page = parseInt(req.query.page);
+                const limit = parseInt(req.query.limit);
+                const salonId = req.query.salonId;
+                const searchQuery = req.query.searchQuery;
+                const bookingList = yield this.bookingUsecase.getSalonBookings(page, limit, salonId, searchQuery);
                 return res.status(bookingList.status).json(bookingList);
             }
             catch (error) {

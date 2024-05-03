@@ -14,6 +14,7 @@ route.get("/resend-otp", (req, res) => controllers_1.vendorController.resendOtp(
 route.post("/login", (req, res) => controllers_1.vendorController.vendorLogin(req, res));
 route.post("/add-salon", vendorAuth_1.vendorAuth, multerMiddleware_1.multerMiddleware.array("banner"), (req, res) => controllers_1.salonController.addSalon(req, res));
 route.get("/services", vendorAuth_1.vendorAuth, (req, res) => controllers_1.serviceController.getAllServices(req, res));
+route.get("/salons/bookings", (req, res) => controllers_1.bookingController.getSalonBookings(req, res));
 route.get("/salons/:vendorId", vendorAuth_1.vendorAuth, (req, res) => controllers_1.salonController.getSalons(req, res));
 route.get("/salons/salon-details/:salonId", vendorAuth_1.vendorAuth, (req, res) => controllers_1.salonController.getSalonById(req, res));
 route.put("/salons/:salonId/services", vendorAuth_1.vendorAuth, (req, res) => controllers_1.salonController.updateSalonServices(req, res));
@@ -28,4 +29,5 @@ route.post("/salons/verify-payment", vendorAuth_1.vendorAuth, (req, res) => cont
 // *Dashboard Routes
 route.get("/dashboard/:vendorId", vendorAuth_1.vendorAuth, (req, res) => controllers_1.salonController.getVendorDashboardData(req, res));
 route.get("/dashboard/salon/:salonId", vendorAuth_1.vendorAuth, (req, res) => controllers_1.salonController.getSalonDashboardData(req, res));
+// * Booking Routes
 exports.default = route;

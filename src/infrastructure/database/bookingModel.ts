@@ -23,66 +23,69 @@ export interface IBooking extends Document {
   choosedServices: Array<string>;
 }
 
-const bookingSchema: Schema = new Schema({
-  salonId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Salon",
+const bookingSchema: Schema = new Schema(
+  {
+    salonId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Salon",
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    salonName: {
+      type: String,
+    },
+    userName: {
+      type: String,
+    },
+    userMobile: {
+      type: String,
+    },
+    chairNumber: {
+      type: Number,
+    },
+    time: {
+      type: String,
+    },
+    startTime: {
+      type: String,
+    },
+    endTime: {
+      type: String,
+    },
+    date: {
+      type: String,
+    },
+    cancellationReason: {
+      type: String,
+    },
+    orderStatus: {
+      type: String,
+      default: "booked",
+    },
+    services: {
+      type: Array,
+    },
+    choosedServices: { type: Array },
+    totalAmount: {
+      type: Number,
+    },
+    totalDuration: {
+      type: Number,
+    },
+    appliedCoupon: {
+      type: Object,
+    },
+    paymentId: {
+      type: String,
+    },
+    refundId: {
+      type: String,
+    },
   },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  },
-  salonName: {
-    type: String,
-  },
-  userName: {
-    type: String,
-  },
-  userMobile: {
-    type: String,
-  },
-  chairNumber: {
-    type: Number,
-  },
-  time: {
-    type: String,
-  },
-  startTime: {
-    type: String,
-  },
-  endTime: {
-    type: String,
-  },
-  date: {
-    type: String,
-  },
-  cancellationReason: {
-    type: String,
-  },
-  orderStatus: {
-    type: String,
-    default: "booked",
-  },
-  services: {
-    type: Array,
-  },
-  choosedServices: { type: Array },
-  totalAmount: {
-    type: Number,
-  },
-  totalDuration: {
-    type: Number,
-  },
-  appliedCoupon: {
-    type: Object,
-  },
-  paymentId: {
-    type: String,
-  },
-  refundId: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
 const BookingModel = mongoose.model<IBooking>("Booking", bookingSchema);
 export default BookingModel;

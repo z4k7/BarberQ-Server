@@ -25,6 +25,12 @@ interface BookingInterface {
     userId: string,
     searchQuery: string
   ): Promise<any>;
+  findSalonBookingsWithCount(
+    page: number,
+    limit: number,
+    salonId: string,
+    searchQuery: string
+  ): Promise<any>;
 
   findBookingById(bookingId: string): Promise<any>;
   findBookingByIdAndUpdate(bokingId: string, refundId: string): Promise<any>;

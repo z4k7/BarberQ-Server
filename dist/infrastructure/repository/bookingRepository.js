@@ -79,12 +79,6 @@ class BookingRepository {
             minute: "2-digit",
         });
         return adjustedTimeString;
-        // const currentTimeString = new Date().toLocaleTimeString(undefined, {
-        //   hour12: false,
-        //   hour: "2-digit",
-        //   minute: "2-digit",
-        // });
-        // return currentTimeString;
     }
     toTimeString(time) {
         return time;
@@ -141,6 +135,49 @@ class BookingRepository {
             return booking;
         });
     }
+    findSalonBookingsWithCount(page, limit, salonId, searchQuery) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(`Inside get salon bookings repository`);
+            try {
+                const regex = new RegExp(searchQuery, "i");
+                const matchStage = {
+                    $or: [
+                        { salonName: { $regex: regex } },
+                        { orderStatus: { $regex: regex } },
+                        { date: { $regex: regex } },
+                    ],
+                };
+                if (salonId !== "") {
+                    matchStage["salonId"] = new mongoose_1.default.Types.ObjectId(salonId);
+                }
+                const pipeline = [
+                    { $match: matchStage },
+                    { $sort: { createdAt: -1 } },
+                    {
+                        $facet: {
+                            totalCount: [{ $count: "count" }],
+                            paginatedResults: [
+                                { $skip: (page - 1) * limit },
+                                { $limit: limit },
+                                { $project: { password: 0 } },
+                            ],
+                        },
+                    },
+                ];
+                const [result] = yield bookingModel_1.default.aggregate(pipeline).exec();
+                const bookings = result.paginatedResults;
+                const bookingsCount = result.totalCount.length > 0 ? result.totalCount[0].count : 0;
+                return {
+                    bookings,
+                    bookingsCount,
+                };
+            }
+            catch (error) {
+                console.log(error);
+                throw new Error("Error while getting salon data");
+            }
+        });
+    }
     findAllBookingsWithCount(page, limit, userId, searchQuery) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -157,6 +194,7 @@ class BookingRepository {
                 }
                 const pipeline = [
                     { $match: matchStage },
+                    { $sort: { createdAt: -1 } },
                     {
                         $facet: {
                             totalCount: [{ $count: "count" }],
