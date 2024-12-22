@@ -40,9 +40,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: '*',
+    // origin: '*',
     // origin: process.env.CLIENT_URL,
-    credentials: true,
+    // credentials: true,
   })
 );
 
@@ -60,9 +60,9 @@ interface IUser {
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    // origin: '*',
     // origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST"],
+    // methods: ["GET", "POST"],
   },
 });
 

@@ -44,9 +44,9 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)({
     // origin: process.env.CLIENT_URL,
-    origin: '*',
+    // origin: '*',
 
-    credentials: true,
+    // credentials: true,
 }));
 app.use("/api/user", userRoute_1.default);
 app.use("/api/vendor", vendorRoute_1.default);
@@ -55,9 +55,9 @@ app.use("/api/token", tokenRoute_1.default);
 exports.io = new socket_io_1.Server(httpServer, {
     cors: {
         // origin: process.env.CLIENT_URL,
-    origin: '*',
+    // origin: '*',
 
-        methods: ["GET", "POST"],
+    //     methods: ["GET", "POST"],
     },
 });
 let users = [];
