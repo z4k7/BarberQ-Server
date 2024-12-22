@@ -40,7 +40,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    // origin: "http://localhost:4200",
+    origin: '*',
+
     credentials: true,
   })
 );
@@ -59,7 +61,9 @@ interface IUser {
 
 export const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:4200",
+    // origin: "http://localhost:4200",  
+      origin: '*',
+
     methods: ["GET", "POST"],
   },
 });
