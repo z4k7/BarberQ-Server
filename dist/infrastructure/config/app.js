@@ -43,7 +43,8 @@ exports.httpServer = httpServer;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cors_1.default)({
-    origin: process.env.CLIENT_URL,
+    // origin: process.env.CLIENT_URL,
+    origin: '*',
 
     credentials: true,
 }));
@@ -53,7 +54,8 @@ app.use("/api/admin", adminRoute_1.default);
 app.use("/api/token", tokenRoute_1.default);
 exports.io = new socket_io_1.Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL,
+        // origin: process.env.CLIENT_URL,
+    origin: '*',
 
         methods: ["GET", "POST"],
     },
