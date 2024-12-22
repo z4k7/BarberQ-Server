@@ -1,7 +1,7 @@
-import { httpServer } from "./infrastructure/config/app";
-import { connectDb } from "./infrastructure/config/connectDb";
 import dotenv from "dotenv";
 dotenv.config();
+import { httpServer } from "./infrastructure/config/app";
+import { connectDb } from "./infrastructure/config/connectDb";
 
 const startServer = async () => {
   try {
