@@ -42,7 +42,9 @@ app.use(
   cors({
     // origin: '*',
     // origin: process.env.CLIENT_URL,
-    // credentials: true,
+    origin: 'https://barberq.z4k7.in',
+
+    credentials: true,
   })
 );
 
@@ -60,9 +62,9 @@ interface IUser {
 
 export const io = new Server(httpServer, {
   cors: {
-    // origin: '*',
+    origin: 'https://barberq.z4k7.in',
     // origin: process.env.CLIENT_URL,
-    // methods: ["GET", "POST"],
+    methods: ["GET", "POST"],
   },
 });
 
